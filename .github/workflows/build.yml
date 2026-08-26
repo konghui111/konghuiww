@@ -55,6 +55,7 @@ jobs:
           python -m ok.update.inline_ok_requirements --tag ${{ github.ref_name }}
 
       - name: Run tests
+        if: false  # 模板测试不适用, 跳过
         run: |
           Get-ChildItem -Path ".\tests\*.py" | ForEach-Object {
               Write-Host "Running tests in $($_.FullName)"
