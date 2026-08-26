@@ -1,0 +1,98 @@
+{
+  "startup": [
+    {
+      "character": "qianxiao",
+      "action": "ea3"
+    },
+    {
+      "character": "suisui",
+      "action": "normal_a23"
+    },
+    {
+      "character": "qianxiao",
+      "action": "a4"
+    },
+    {
+      "character": "suisui",
+      "action": "a4e"
+    },
+    {
+      "character": "suisui",
+      "action": "ea4qr"
+    },
+    {
+      "character": "qianxiao",
+      "action": "skill_coordination"
+    },
+    {
+      "character": "qianxiao",
+      "action": "qre"
+    },
+    {
+      "character": "feixue",
+      "action": "aa"
+    },
+    {
+      "character": "qianxiao",
+      "action": "super_z2a3"
+    },
+    {
+      "character": "qianxiao",
+      "action": "super_a4"
+    },
+    {
+      "character": "feixue",
+      "action": "main"
+    }
+  ],
+  "loop": [
+    {
+      "character": "suisui",
+      "action": "skill_coordination_z"
+    },
+    {
+      "character": "qianxiao",
+      "action": "z"
+    },
+    {
+      "character": "feixue",
+      "action": "aa"
+    },
+    {
+      "character": "qianxiao",
+      "action": "ea3"
+    },
+    {
+      "character": "suisui",
+      "action": "super_a12"
+    },
+    {
+      "character": "qianxiao",
+      "action": "a4"
+    },
+    {
+      "character": "suisui",
+      "action": "ea4qr"
+    },
+    {
+      "character": "qianxiao",
+      "action": "skill_coordination"
+    },
+    {
+      "character": "qianxiao",
+      "action": "qre"
+    },
+    {
+      "character": "qianxiao",
+      "action": "super_z2a3"
+    },
+    {
+      "character": "qianxiao",
+      "action": "super_a4"
+    },
+    {
+      "character": "feixue",
+      "action": "main"
+    }
+  ]
+}

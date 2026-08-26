@@ -1,0 +1,4 @@
+interface:
+  display_name: "OK Character Codegen"
+  short_description: "Generate character action code from text axis descriptions"
+  default_prompt: "Use $ok-character-codegen to generate character combat action functions from a text axis description."

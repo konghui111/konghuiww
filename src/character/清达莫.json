@@ -1,0 +1,93 @@
+{
+  "startup": [
+    {
+      "character": "qingxiao",
+      "action": "a12"
+    },
+    {
+      "character": "denia",
+      "action": "er1"
+    },
+    {
+      "character": "denia",
+      "action": "aa"
+    },
+    {
+      "character": "Mornye",
+      "action": "aa_a3rz"
+    },
+    {
+      "character": "qingxiao",
+      "action": "a123"
+    },
+    {
+      "character": "denia",
+      "action": "aafaa"
+    },
+    {
+      "character": "denia",
+      "action": "ee"
+    },
+    {
+      "character": "denia",
+      "action": "r2"
+    },
+    {
+      "character": "qingxiao",
+      "action": "skill_coordination"
+    },
+    {
+      "character": "qingxiao",
+      "action": "main"
+    }
+  ],
+  "loop": [
+    {
+      "character": "qingxiao",
+      "action": "a12"
+    },
+    {
+      "character": "Mornye",
+      "action": "skill_coordination"
+    },
+    {
+      "character": "Mornye",
+      "action": "3aez"
+    },
+    {
+      "character": "denia",
+      "action": "skill_coordination"
+    },
+    {
+      "character": "denia",
+      "action": "er1"
+    },
+    {
+      "character": "denia",
+      "action": "aafaa"
+    },
+    {
+      "character": "denia",
+      "action": "ee"
+    },
+    {
+      "character": "qingxiao",
+      "action": "a123"
+    },
+    {
+      "character": "denia",
+      "action": "r2"
+    },
+    {
+      "character": "qingxiao",
+      "action": "skill_coordination"
+    },
+    {
+      "character": "qingxiao",
+      "action": "main"
+    }
+  ],
+  "loop2": [],
+  "loop3": [],
+  "finish": []
+}

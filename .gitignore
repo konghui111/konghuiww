@@ -66,3 +66,11 @@ pip-log.txt
 pip-delete-this-directory.txt
 autohelper
 working_images/
+
+# 个人笔记和运行时数据
+gui.txt
+需求.txt
+需求1.txt
+轴记录.txt
+src/character/111.json
+src/character/fg_time_data.json

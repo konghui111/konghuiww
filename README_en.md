@@ -1,10 +1,8 @@
-# ok-script-app
+# Wuthering Waves Score Helper
 
 English | [中文](README.md)
 
-ok-script-app is a Python automation project template built on [ok-script](https://github.com/ok-oldking/ok-script). It includes a runnable GUI app, task examples, configuration widget examples, OCR and template matching examples, tests, localization files, and packaging configuration for native Windows games, Android emulators, and browser games.
-
-This repository is not a finished automation tool for a specific game. It is a starter project and feature demo for building your own ok-script application.
+Wuthering Waves Score Helper is a game automation tool for Wuthering Waves, built on [ok-script](https://github.com/ok-oldking/ok-script).
 
 ### Demo
 
@@ -34,19 +32,12 @@ This repository is not a finished automation tool for a specific game. It is a s
 
 ## Quick Start
 
-### 1. Create a Repository From the Template
-
-Click [Use this template](https://github.com/ok-oldking/ok-script-app/generate) on GitHub, create your own repository, and clone it:
+### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/<your-github-name>/<your-repository>.git
-cd <your-repository>
+git clone https://github.com/konghui111/konghuiww.git
+cd konghuiww
 ```
-
-After cloning, choose either initialization path:
-
-- **Use an AI coding tool (recommended):** In Codex, enter `Use $initialize-ok-script-app to initialize this repository.` With another AI coding tool, ask it to read `.agents/skills/initialize-ok-script-app/SKILL.md` first. The initializer asks for the game name, target platform, Windows executable, Android package or browser URL, repository URLs, icons, and first task before changing files.
-- **Initialize manually:** Continue with the steps below.
 
 ### 2. Install Python 3.12 and Create a Virtual Environment
 
@@ -113,12 +104,7 @@ python -m unittest tests.TestMain
 
 ### 7. Push a Tag to Build the exe
 
-Before pushing a tag, adapt `.github/workflows/build.yml` to the project. Update the repository sync targets, installer names, Release download links, Git identity, and required secrets.
-
-- **With MirrorChyan:** Keep and update `.github/workflows/mirrorchyan_uploading.yml` and `.github/workflows/mirrorchyan_release_note.yml`. Replace project-specific values such as `owner`, `repo`, `mirrorchyan_rid`, and the installer filename. Keep the steps in `build.yml` that dispatch these workflows, and configure the `MirrorChyanUploadToken` repository secret.
-- **Without MirrorChyan:** Delete both MirrorChyan workflow files and remove the `Trigger MirrorChyanUploading` step from `build.yml`.
-
-After configuring the workflows, commit and push the code, then create a version tag matching the `v*` workflow rule:
+Commit and push the code, then create a version tag matching the `v*` workflow rule:
 
 ```bash
 git add .
@@ -128,7 +114,7 @@ git tag v0.1.0
 git push origin v0.1.0
 ```
 
-GitHub Actions runs the tests, packages the exe, and creates the matching GitHub Release. Before the first release, check `.github/workflows` again for template repository URLs, template project names, or secrets that have not been configured.
+GitHub Actions runs the tests, packages the exe, and creates the matching GitHub Release.
 
 ## Project Layout
 
@@ -168,10 +154,9 @@ With custom tasks enabled, you can also create and edit task scripts from the GU
 
 ## Release Files
 
-- `.github/workflows/build.yml`: Watches `v*` tags, runs tests, syncs update files, packages the app, and creates a GitHub Release.
+- `.github/workflows/build.yml`: Watches `v*` tags, runs tests, packages the app, and creates a GitHub Release.
 - `pyappify.yml`: Defines the app name, entry point, icon, Python version, and update repositories.
-- `deploy.txt`: Lists files copied to a dedicated update repository.
-- `.github/workflows/mirrorchyan_*.yml`: Optional MirrorChyan upload and release-note workflows; delete them as described in Quick Start step 7 when MirrorChyan is not used.
+- `deploy.txt`: Lists files synced to the update repository (for future dedicated update repo).
 
 ## ok-script Documentation (Chinese)
 
@@ -182,9 +167,7 @@ With custom tasks enabled, you can also create and edit task scripts from the GU
 
 ## Community
 
-- QQ user group: `1097603920`
-- QQ developer group: `938132715`
-- [Discord](https://discord.gg/vVyCatEBgA)
+- Project page: [https://github.com/konghui111/konghuiww](https://github.com/konghui111/konghuiww)
 
 ## Credits
 

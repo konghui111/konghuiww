@@ -66,7 +66,7 @@ config = {
         }
     },
     'windows': {  # Windows游戏请填写此设置
-        #'exe': ['StarRail.exe'],
+        'exe': ['Client-Win64-Shipping.exe','鸣潮.exe'],
         # optional, if set, will search the exe only
         # 'hwnd_class': 'UnrealWindow', #增加重名检查准确度
         'interaction': ['Pynput', 'PostMessage', 'Genshin', 'PyDirect','ForegroundPostMessage'], # Genshin:某些操作可以后台, 部分游戏支持 PostMessage:可后台点击, 极少游戏支持 ForegroundPostMessage:前台使用PostMessage Pynput/PyDirect:仅支持前台使用
@@ -98,16 +98,12 @@ config = {
     },
     'links': { # 关于里显示的链接, 可选
             'default': {
-                'github': 'https://github.com/ok-oldking/ok-script-app',
-                'discord': 'https://discord.gg/vVyCatEBgA',
-                'share': 'Download from https://github.com/ok-oldking/ok-script-app',
-                'qq_group':'https://qm.qq.com/q/3Gq4VLvQe',
-                'qq_channel': 'https://pd.qq.com/s/djmm6l44y',
-                'faq': 'https://github.com/ok-oldking/ok-script-app'
+                'github': 'https://github.com/konghui111/konghuiww',
+                'share': 'Download from https://github.com/konghui111/konghuiww',
             }
         },
     'screenshots_folder': "screenshots", #截图存放目录, 每次重新启动会清空目录
-    'gui_title': 'ok-script-app',  #窗口名
+    'gui_title': '鸣潮凹分助手',  #窗口名
     'template_matching': { # 可选, 如使用OpenCV的模板匹配
         'coco_feature_json': os.path.join('assets', 'coco_annotations.json'), #coco格式标记, 需要png图片, 在debug模式运行后, 会对进行切图仅保留被标记部分以减少图片大小
         'default_horizontal_variance': 0.002, #默认x偏移, 查找不传box的时候, 会根据coco坐标, match偏移box内的
@@ -116,7 +112,10 @@ config = {
     },
     'version': version, #版本
     'my_app': ['src.globals', 'Globals'], #可选. 全局单例对象, 可以存放加载的模型, 使用og.my_app调用
+    'custom_tabs': [["src.ui.CombatTab", "CombatTab"]],  # 自定义 Tab: 战斗配置
     'onetime_tasks': [  # 用户点击触发的任务
+        ["src.tasks.CharacterAutoTask", "CharacterAutoTask"],
+        ["src.tasks.ColorPercentageTask", "ColorPercentageTask"],
         ["src.tasks.MyOneTimeTask", "MyOneTimeTask"],
         ["ok", "DiagnosisTask"],
     ],

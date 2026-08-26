@@ -1,10 +1,8 @@
-# ok-script-app
+# 鸣潮凹分助手
 
 [English](README_en.md) | 中文
 
-ok-script-app 是一个基于 [ok-script](https://github.com/ok-oldking/ok-script) 的 Python 自动化项目模板。它提供了可直接运行的 GUI、任务示例、配置控件示例、OCR 示例、模板匹配示例、测试用例和打包配置，适合快速创建面向 Windows 原生游戏、Android 模拟器或浏览器游戏的自动化项目。
-
-这个仓库不是某个具体游戏的自动化成品，而是 ok-script 应用的起步工程和功能演示。
+鸣潮凹分助手是一个基于 [ok-script](https://github.com/ok-oldking/ok-script) 的鸣潮 (Wuthering Waves) 游戏自动化工具。
 
 ### 功能演示
 
@@ -34,19 +32,12 @@ ok-script-app 是一个基于 [ok-script](https://github.com/ok-oldking/ok-scrip
 
 ## 快速开始
 
-### 1. 从模板创建仓库
-
-点击 GitHub 上的 [Use this template](https://github.com/ok-oldking/ok-script-app/generate)，创建你自己的 repository，然后 clone：
+### 1. 克隆仓库
 
 ```bash
-git clone https://github.com/<你的 GitHub 用户名>/<你的仓库名>.git
-cd <你的仓库名>
+git clone https://github.com/konghui111/konghuiww.git
+cd konghuiww
 ```
-
-clone 完成后，可以选择以下任一方式初始化项目：
-
-- **使用 AI 编程工具（推荐）**：在 Codex 中输入 `使用 $initialize-ok-script-app 初始化这个仓库`。使用其他 AI 编程工具时，请让它先阅读 `.agents/skills/initialize-ok-script-app/SKILL.md`。初始化助手会先询问游戏名、运行平台、Windows 进程名、Android 包名或浏览器 URL、仓库地址、图标和第一个任务等信息，再修改项目。
-- **手动初始化**：继续完成下面的步骤。
 
 ### 2. 安装 Python 3.12 并创建虚拟环境
 
@@ -113,12 +104,7 @@ python -m unittest tests.TestMain
 
 ### 7. 推送 tag，触发 exe 打包
 
-推送 tag 前，必须先根据自己的项目修改 `.github/workflows/build.yml`，包括更新仓库同步目标、安装包名称、Release 下载链接、Git 信息和所需 Secrets。
-
-- **接入 Mirror酱**：保留并修改 `.github/workflows/mirrorchyan_uploading.yml` 和 `.github/workflows/mirrorchyan_release_note.yml` 中的 `owner`、`repo`、`mirrorchyan_rid`、安装包文件名等项目参数；同时保留 `build.yml` 中触发这两个工作流的步骤，并在仓库中配置 `MirrorChyanUploadToken`。
-- **不接入 Mirror酱**：删除上述两个 MirrorChyan workflow 文件，并删除 `build.yml` 中的 `Trigger MirrorChyanUploading` 步骤。
-
-完成工作流配置后，提交并推送代码，再创建符合 `v*` 规则的版本 tag：
+提交并推送代码，再创建符合 `v*` 规则的版本 tag：
 
 ```bash
 git add .
@@ -128,7 +114,7 @@ git tag v0.1.0
 git push origin v0.1.0
 ```
 
-GitHub Actions 会运行测试、打包 exe，并在仓库的 Releases 页面创建对应版本。首次发布前，请再次检查 `.github/workflows` 中是否仍有模板仓库地址、模板项目名或尚未配置的 Secrets。
+GitHub Actions 会运行测试、打包 exe，并在仓库的 Releases 页面创建对应版本。
 
 ## 项目结构
 
@@ -168,10 +154,9 @@ deploy.txt             发布时同步到更新仓库的文件列表
 
 ## 发布相关文件
 
-- `.github/workflows/build.yml`：监听 `v*` tag，运行测试、同步更新文件、打包并创建 GitHub Release。
+- `.github/workflows/build.yml`：监听 `v*` tag，运行测试、打包并创建 GitHub Release。
 - `pyappify.yml`：定义应用名称、入口、图标、Python 版本和更新仓库。
-- `deploy.txt`：定义需要同步到独立更新仓库的文件。
-- `.github/workflows/mirrorchyan_*.yml`：可选的 Mirror酱上传与更新日志工作流；不接入时按快速开始第 7 步删除。
+- `deploy.txt`：定义需要同步到独立更新仓库的文件（如将来使用独立更新仓库）。
 
 ## ok-script 文档
 
@@ -182,9 +167,7 @@ deploy.txt             发布时同步到更新仓库的文件列表
 
 ## 社区
 
-- 用户群：`1097603920`
-- 开发者群：`938132715`
-- [Discord](https://discord.gg/vVyCatEBgA)
+- 项目地址：[https://github.com/konghui111/konghuiww](https://github.com/konghui111/konghuiww)
 
 ## 致谢
 

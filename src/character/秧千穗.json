@@ -1,0 +1,145 @@
+{
+  "startup": [
+    {
+      "character": "yangyang",
+      "action": "c_a1"
+    },
+    {
+      "character": "suisui",
+      "action": "normal_a23"
+    },
+    {
+      "character": "qianxiao",
+      "action": "ea3"
+    },
+    {
+      "character": "yangyang",
+      "action": "c_a12"
+    },
+    {
+      "character": "suisui",
+      "action": "a4e"
+    },
+    {
+      "character": "qianxiao",
+      "action": "short_a4"
+    },
+    {
+      "character": "yangyang",
+      "action": "c_a3e"
+    },
+    {
+      "character": "suisui",
+      "action": "ea4qr"
+    },
+    {
+      "character": "qianxiao",
+      "action": "skill_coordination"
+    },
+    {
+      "character": "qianxiao",
+      "action": "qre"
+    },
+    {
+      "character": "yangyang",
+      "action": "y_a12"
+    },
+    {
+      "character": "qianxiao",
+      "action": "super_z2a3"
+    },
+    {
+      "character": "yangyang",
+      "action": "y_z1"
+    },
+    {
+      "character": "qianxiao",
+      "action": "super_a4"
+    },
+    {
+      "character": "yangyang",
+      "action": "skill_coordination"
+    },
+    {
+      "character": "yangyang",
+      "action": "main"
+    }
+  ],
+  "loop": [
+    {
+      "character": "yangyang",
+      "action": "w_e_c_a2"
+    },
+    {
+      "character": "suisui",
+      "action": "skill_coordination_z"
+    },
+    {
+      "character": "qianxiao",
+      "action": "z"
+    },
+    {
+      "character": "yangyang",
+      "action": "c_a34"
+    },
+    {
+      "character": "qianxiao",
+      "action": "ea3"
+    },
+    {
+      "character": "suisui",
+      "action": "super_a12"
+    },
+    {
+      "character": "yangyang",
+      "action": "c_e"
+    },
+    {
+      "character": "qianxiao",
+      "action": "a4"
+    },
+    {
+      "character": "suisui",
+      "action": "ea4qr"
+    },
+    {
+      "character": "yangyang",
+      "action": "skill_coordination"
+    },
+    {
+      "character": "yangyang",
+      "action": "y_a12"
+    },
+    {
+      "character": "qianxiao",
+      "action": "qre"
+    },
+    {
+      "character": "yangyang",
+      "action": "y_a34"
+    },
+    {
+      "character": "qianxiao",
+      "action": "super_z2a3"
+    },
+    {
+      "character": "yangyang",
+      "action": "y_z1"
+    },
+    {
+      "character": "qianxiao",
+      "action": "super_a4"
+    },
+    {
+      "character": "yangyang",
+      "action": "skill_coordination"
+    },
+    {
+      "character": "yangyang",
+      "action": "main"
+    }
+  ],
+  "loop2": [],
+  "loop3": [],
+  "finish": []
+}

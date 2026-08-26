@@ -1,0 +1,69 @@
+{
+  "startup": [
+    {
+      "character": "Linnai",
+      "action": "e"
+    },
+    {
+      "character": "Mornye",
+      "action": "aa_a3rz"
+    },
+    {
+      "character": "Linnai",
+      "action": "r"
+    },
+    {
+      "character": "Mornye",
+      "action": "3aez"
+    },
+    {
+      "character": "Linnai",
+      "action": "skill_coordination"
+    },
+    {
+      "character": "Linnai",
+      "action": "jump_a"
+    },
+    {
+      "character": "Aemeath",
+      "action": "skill_coordination"
+    },
+    {
+      "character": "Aemeath",
+      "action": "startup"
+    }
+  ],
+  "loop": [
+    {
+      "character": "Aemeath",
+      "action": "mecha_e"
+    },
+    {
+      "character": "Mornye",
+      "action": "skill_coordination"
+    },
+    {
+      "character": "Mornye",
+      "action": "3aezr"
+    },
+    {
+      "character": "Linnai",
+      "action": "e"
+    },
+    {
+      "character": "Aemeath",
+      "action": "a4_until_buff"
+    },
+    {
+      "character": "Linnai",
+      "action": "zr_jump_a"
+    },
+    {
+      "character": "Aemeath",
+      "action": "loop"
+    }
+  ],
+  "loop2": [],
+  "loop3": [],
+  "finish": []
+}
