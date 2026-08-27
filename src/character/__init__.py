@@ -391,22 +391,20 @@ def f_execute(task, f_time=1.6):  # 处决检测与执行: 屏幕中央找处决
     """
     x1, y1, x2, y2 = F_BREAK_REGION  # 解包区域比例
     # 构造中央搜索区域 (比例自动换算为当前分辨率的像素坐标)
+    can_f = check_skill_available_binary(task,"f",threshold=200,white_threshold=0.99)
     box = task.box_of_screen(x1, y1, x2, y2, hcenter=True, vcenter=True, name="f_break_search")
-    task.next_frame()  # 获取新帧用于找图
+    # task.next_frame()  # 获取新帧用于找图
     # 找处决按键图片: 降采样到 720p 匹配提速, 结果坐标自动换算回原尺度
-    try:
-        found = task.find_one("f_break", box=box, threshold=F_BREAK_THRESHOLD,
+    found = task.find_one("f_break", box=box, threshold=F_BREAK_THRESHOLD,
                               target_height=F_BREAK_TARGET_HEIGHT)
-    except ValueError:  # f_break 特征尚未在 COCO 中标注 (特征生成完成后此分支不会进入)
-        task.log_warning("f_break 特征不存在, 无法进行处决检测")
-        return 0
-    if found:  # 找到 = 一定可处决
+    if found or can_f:  # 找到 = 一定可处决
         task.log_info(f"处决 开始")
         task.send_key("f")  # 按 F 处决
         time.sleep(f_time)  # 等处决动画
+        return 1  # 处决成功 (found 或 can_f 任一命中即算成功)
     else:  # 未找到处决按键
         task.log_info(f"不能处决")
-    return 1 if found else 0
+        return 0
 
 def enable_mouse_tracking(task):  # 包装 task 的 mouse_down/mouse_up, 记录脚本长按状态
     """
@@ -576,6 +574,7 @@ from src.character import Aemeath
 from src.character import Mornye
 from src.character import qingxiao
 from src.character import denia
+from src.character import jianxin
 
 CHARACTER_LIBRARY = {  # 角色库: 角色名 → 脚本模块, 新增角色在此注册
     "qianxiao": qianxiao,  # 千晓
@@ -586,5 +585,6 @@ CHARACTER_LIBRARY = {  # 角色库: 角色名 → 脚本模块, 新增角色在�
     "Aemeath": Aemeath,
     "Mornye": Mornye,
     "qingxiao": qingxiao,
-    "denia": denia
+    "denia": denia,
+    "jianxin": jianxin
 }

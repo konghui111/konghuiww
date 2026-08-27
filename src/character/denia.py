@@ -41,17 +41,19 @@ register_action(CHARACTER_NAME, "er1")  # 注册动作 er1
 
 def _action_aa(task):
     #不能处决就闪避
-    continuous_click(task, 0.7)
+    continuous_click(task, 0.6)
     return True
 register_action(CHARACTER_NAME, "aa")  # 注册动作 aafaa
 
 def _action_aafaa(task):
     #不能处决就闪避
-    continuous_click(task, 0.7)
+    continuous_click(task, 0.6)
     if not f_execute(task,1.6):
-        task.send_key("space")
-        time.sleep(0.3)
-    continuous_click(task, 0.7)
+        # task.send_key("space")
+        # time.sleep(0.4)
+        task.right_click()
+        time.sleep(0.5)
+    continuous_click(task, 0.6)
     return True
 register_action(CHARACTER_NAME, "aafaa")  # 注册动作 aafaa
 

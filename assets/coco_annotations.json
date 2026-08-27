@@ -80,13 +80,13 @@
         },
         {
             "id": 16,
-            "file_name": "images/0.png",
+            "file_name": "images/2.png",
             "width": 2560,
             "height": 1440
         },
         {
             "id": 17,
-            "file_name": "images/2.png",
+            "file_name": "images/3.png",
             "width": 2560,
             "height": 1440
         },
@@ -104,19 +104,19 @@
         },
         {
             "id": 20,
-            "file_name": "images/3.png",
+            "file_name": "images/4.png",
             "width": 2560,
             "height": 1440
         },
         {
             "id": 21,
-            "file_name": "images/4.png",
+            "file_name": "images/5.png",
             "width": 2560,
             "height": 1440
         },
         {
             "id": 22,
-            "file_name": "images/4.png",
+            "file_name": "images/3.png",
             "width": 2560,
             "height": 1440
         },
@@ -140,7 +140,7 @@
         },
         {
             "id": 26,
-            "file_name": "images/4.png",
+            "file_name": "images/3.png",
             "width": 2560,
             "height": 1440
         },
@@ -152,7 +152,7 @@
         },
         {
             "id": 28,
-            "file_name": "images/5.png",
+            "file_name": "images/4.png",
             "width": 2560,
             "height": 1440
         },
@@ -164,7 +164,7 @@
         },
         {
             "id": 30,
-            "file_name": "images/5.png",
+            "file_name": "images/6.png",
             "width": 2560,
             "height": 1440
         },
@@ -200,7 +200,7 @@
         },
         {
             "id": 38,
-            "file_name": "images/6.png",
+            "file_name": "images/7.png",
             "width": 2560,
             "height": 1440
         },
@@ -261,6 +261,24 @@
         {
             "id": 49,
             "file_name": "images/16.png",
+            "width": 2560,
+            "height": 1440
+        },
+        {
+            "id": 50,
+            "file_name": "images/16.png",
+            "width": 2560,
+            "height": 1440
+        },
+        {
+            "id": 51,
+            "file_name": "images/0.png",
+            "width": 2560,
+            "height": 1440
+        },
+        {
+            "id": 52,
+            "file_name": "images/1.png",
             "width": 2560,
             "height": 1440
         }
@@ -505,12 +523,12 @@
             "image_id": 4,
             "category_id": 19,
             "bbox": [
-                780,
-                43,
-                80,
-                80
+                817,
+                51,
+                7,
+                5
             ],
-            "area": 6400,
+            "area": 35,
             "iscrowd": 0
         },
         {
@@ -1292,6 +1310,84 @@
             ],
             "area": 1190,
             "iscrowd": 0
+        },
+        {
+            "id": 80,
+            "image_id": 50,
+            "category_id": 80,
+            "bbox": [
+                2406,
+                1286,
+                35,
+                24
+            ],
+            "area": 840,
+            "iscrowd": 0
+        },
+        {
+            "id": 81,
+            "image_id": 50,
+            "category_id": 81,
+            "bbox": [
+                2144,
+                1303,
+                56,
+                14
+            ],
+            "area": 784,
+            "iscrowd": 0
+        },
+        {
+            "id": 82,
+            "image_id": 50,
+            "category_id": 82,
+            "bbox": [
+                2369,
+                489,
+                50,
+                50
+            ],
+            "area": 2500,
+            "iscrowd": 0
+        },
+        {
+            "id": 83,
+            "image_id": 3,
+            "category_id": 83,
+            "bbox": [
+                2387,
+                1266,
+                21,
+                43
+            ],
+            "area": 903,
+            "iscrowd": 0
+        },
+        {
+            "id": 84,
+            "image_id": 51,
+            "category_id": 84,
+            "bbox": [
+                2413,
+                749,
+                30,
+                5
+            ],
+            "area": 150,
+            "iscrowd": 0
+        },
+        {
+            "id": 85,
+            "image_id": 52,
+            "category_id": 85,
+            "bbox": [
+                1027,
+                1333,
+                3,
+                8
+            ],
+            "area": 24,
+            "iscrowd": 0
         }
     ],
     "categories": [
@@ -1688,6 +1784,36 @@
         {
             "id": 79,
             "name": "denia_super_e2",
+            "supercategory": ""
+        },
+        {
+            "id": 80,
+            "name": "jianxin_r",
+            "supercategory": ""
+        },
+        {
+            "id": 81,
+            "name": "jianxin_e",
+            "supercategory": ""
+        },
+        {
+            "id": 82,
+            "name": "character_jianxin",
+            "supercategory": ""
+        },
+        {
+            "id": 83,
+            "name": "suisui_r",
+            "supercategory": ""
+        },
+        {
+            "id": 84,
+            "name": "suisui_buff_location",
+            "supercategory": ""
+        },
+        {
+            "id": 85,
+            "name": "forte_location",
             "supercategory": ""
         }
     ]

@@ -18,7 +18,7 @@ def _action_aa(task):
     """
     普通攻击连击
     """
-    continuous_click(task, 0.4)
+    continuous_click(task, 0.45)
     return True
 register_action(CHARACTER_NAME, "aa")  # 注册普通攻击
 
@@ -38,18 +38,18 @@ register_action(CHARACTER_NAME, "ea")  # 注册 e 技能接攻击
 def feixue_x(task):
     task.mouse_down(key="right")
     while task.enabled and task._combat_active:
-        if check_skill_available(task, "sa",white_threshold=0, skill_image="feixue_x"):    
+        if check_skill_available(task, "sa", skill_image="feixue_x"):    
         # if not check_skill_available(task, "a",white_threshold=0, skill_image="feixue_x_prepare"):
             task.mouse_up(key="right")
             break
         time.sleep(0.05)
     time.sleep(0.15)    
     while task.enabled and task._combat_active:
-        if check_skill_available(task, "sa",white_threshold=0, skill_image="feixue_x"):
+        if check_skill_available(task, "sa", skill_image="feixue_x"):
             break
         time.sleep(0.01)
     while task.enabled and task._combat_active:
-        if not check_skill_available(task, "sa",white_threshold=0, skill_image="feixue_x"):
+        if not check_skill_available(task, "sa", skill_image="feixue_x"):
             break
         task.click()  
         time.sleep(0.06)
@@ -70,14 +70,17 @@ def _action_main(task,slot):
             break      
         time.sleep(0.01)  
     task.mouse_up()  # 释放鼠标左键    
-    time.sleep(0.15)    
+    time.sleep(0.05)    
     task.send_key("q")
-    task.send_key("r")
     while task.enabled and task._combat_active:
-        if not check_skill_available(task, "r",white_threshold=0.01,skill_image="feixue_r1"):  # 检测 r 区域
+        if check_skill_available(task, "r",skill_image="feixue_r1"):  # 检测 r 区域
+            break 
+        time.sleep(0.05)
+    while task.enabled and task._combat_active:
+        if not check_skill_available(task, "r",skill_image="feixue_r1"):  # 检测 r 区域
             break
         task.send_key("r") 
-        time.sleep(0.01) 
+        time.sleep(0.05) 
     time.sleep(1.0)
     while task.enabled and task._combat_active:
         if check_skill_available(task, "e"):
@@ -96,38 +99,41 @@ def _action_main(task,slot):
     feixue_x(task)   
     time.sleep(0.05)     
     task.send_key("space")
-    time.sleep(0.01)
+    time.sleep(0.05)
     task.send_key_down("e")
     while task.enabled and task._combat_active:
-        if check_skill_available(task, "sa",white_threshold=0, skill_image="feixue_x"):
+        if check_skill_available(task, "sa", skill_image="feixue_x"):
             task.send_key_up("e")
             break  
         time.sleep(0.01)
+    time.sleep(0.35)    
     while task.enabled and task._combat_active:
-        if not check_skill_available(task, "sa",white_threshold=0, skill_image="feixue_x"):
+        if not check_skill_available(task, "sa", skill_image="feixue_x"):
             break
         task.click()
         time.sleep(0.05)
     # --x--
-    time.sleep(0.1)
+    time.sleep(0.05)
     # 步骤13: 预留处决函数位置
     if not f_execute(task,1.6):
         branch_parts.append("no_execute")  # 处决失败
-        continuous_click(task, 1.7)
-        task.send_key("space")
-        continuous_click(task, 1)
-        feixue_x(task)
-        time.sleep(0.05)
+        # continuous_click(task, 1.2)
+        # task.right_click(after_sleep=0.5)
+        # continuous_click(task, 1.2)
+        # feixue_x(task)
+        # time.sleep(0.05)
+        # task.send_key("space")
+        # time.sleep(0.01)
     else:
         branch_parts.append("execute")  # 处决成功
         continuous_click(task, 0.3)
         task.right_click(after_sleep=0.5)
         continuous_click(task, 1.2)
-        feixue_x(task)
-        time.sleep(0.05)
-        task.send_key("space")
-        time.sleep(0.01)
-    
+        
+    feixue_x(task)
+    time.sleep(0.05)
+    task.send_key("space")
+    time.sleep(0.05)
     # a123
     # --x跳e--
     while task.enabled and task._combat_active:
@@ -137,20 +143,20 @@ def _action_main(task,slot):
         time.sleep(0.01)
     task.send_key_down("e")
     while task.enabled and task._combat_active:
-        if check_skill_available(task, "sa",white_threshold=0, skill_image="feixue_x"):
+        if check_skill_available(task, "sa", skill_image="feixue_x"):
             task.send_key_up("e")
             time.sleep(0.01)
             task.click()
             break 
         time.sleep(0.01)
     # --x--z--
-    if check_skill_available(task, "feixue_x5",white_threshold=0, skill_image="feixue_x5_location"):
+    if check_skill_available(task, "feixue_x5", skill_image="feixue_x5_location"):
         branch_parts.append("with_x5")  # x5 技能可用
         while task.enabled and task._combat_active:
-            if not check_skill_available(task, "feixue_x5",white_threshold=0, skill_image="feixue_x5_location"):
-                continuous_click(task, 0.25)
+            if not check_skill_available(task, "feixue_x5", skill_image="feixue_x5_location"):
+                continuous_click(task, 0.35)
                 task.mouse_down()
-                time.sleep(0.3)
+                time.sleep(0.4)
                 break
             task.click()
             time.sleep(0.05)
@@ -158,7 +164,7 @@ def _action_main(task,slot):
         branch_parts.append("no_x5")  # x5 技能不可用
         continuous_click(task, 0.25)
         task.mouse_down()
-        time.sleep(0.3)
+        time.sleep(0.3)    
     task.send_key("space")
     time.sleep(0.05)
     while task.enabled and task._combat_active:

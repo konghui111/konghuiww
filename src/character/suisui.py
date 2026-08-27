@@ -18,7 +18,7 @@ WHITE = {'b': (255, 255), 'g': (255, 255), 'r': (255, 255)}  # 白色 RGB 颜色
 
 
 def _action_aaaa(task):
-    continuous_click(task, 3)
+    continuous_click(task, 0.8)
     return True
 register_action(CHARACTER_NAME, "aaaa")  # 注册动作 aaaa
 
@@ -82,9 +82,19 @@ def _action_ea4qr(task):
     # 步骤3: 持续点击鼠标左键 850ms
     continuous_click(task, 0.85)
     # 步骤4: 点击 q
-    task.send_key("q")
+    while task.enabled and task._combat_active:  
+        if check_skill_available(task, "r",skill_image="suisui_r"):
+            break
+        task.click()
+        time.sleep(0.05)   
+    task.send_key("q")     
+    while task.enabled and task._combat_active:  
+        if not check_skill_available(task, "r",skill_image="suisui_r"):
+            break
+        task.send_key("r")
+        time.sleep(0.05)    
     # 步骤5: 点击 r
-    task.send_key("r")
+    # task.send_key("r")
     # 步骤6: 时停 4.3s
     freeze_time(task, 4.3)
     # 步骤7: 等待 4 秒
@@ -143,7 +153,7 @@ def _action_skill_coordination(task):  # 特殊技能-变奏: 新登场角色触
     """
     slot = int(task._character_slots[CHARACTER_NAME])
     task._char_data[slot]['states']['e_buff_time'] = time.time() + 8.0
-    continuous_click(task, 0.1)
+    continuous_click(task, 1.4)
     return True
 register_action(CHARACTER_NAME, "skill_coordination", force_clear=True)  # 注册变奏动作
 

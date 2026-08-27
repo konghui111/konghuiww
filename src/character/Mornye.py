@@ -51,17 +51,17 @@ def _action_3aez(task):
     """
     task.mouse_down()  # 按住鼠标左键
     box = get_location_box(task, "Mornye_forte_location")
-    while task.enabled and task._combat_active:  # 等待二值化条件满足 (calculate_binary_percentage 内部自动刷帧)
-        if box and calculate_binary_percentage(task, box, 192) < 0.05: #0.07859078
-            break
-        time.sleep(0.05) 
+    # while task.enabled and task._combat_active:  # 等待二值化条件满足 (calculate_binary_percentage 内部自动刷帧)
+    #     if box and calculate_binary_percentage(task, box, 192) < 0.05: #0.07859078
+    #         break
+    #     time.sleep(0.05) 
     # time.sleep(0.1)       
     # while task.enabled and task._combat_active:  # 等待二值化条件满足 (calculate_binary_percentage 内部自动刷帧)
     #     if box and calculate_binary_percentage(task, box, 192) >= 0.7: #0.07859078 (193,197,241) 0.2552552552552553
     #         break
     #     time.sleep(0.05)
-    time.sleep(1.8)    
-    # continuous_click(task, 2)
+    time.sleep(1.5)    
+    # continuous_click(task, 1.9)
     task.log_info(f"{CHARACTER_NAME} 回路足够释放e")    
     while task.enabled and task._combat_active:  #
         task.send_key("e")
@@ -74,7 +74,7 @@ def _action_3aez(task):
     #     time.sleep(0.05)    
     # time.sleep(0.7)
     task.log_info(f"{CHARACTER_NAME} 回路足够释放重击")    
-    time.sleep(1)     #  z  
+    time.sleep(2)     #  z  
     while task.enabled and task._combat_active:
         if _check_special_skill(task):
             break
@@ -89,11 +89,12 @@ def _action_3aezr(task):
     """
     task.mouse_down()  # 按住鼠标左键
     box = get_location_box(task, "Mornye_forte_location")
-    while task.enabled and task._combat_active:  # 等待二值化条件满足 (calculate_binary_percentage 内部自动刷帧)
-        if box and calculate_binary_percentage(task, box, 192) < 0.05: #0.07859078
-            break
-        time.sleep(0.05) 
-    time.sleep(1.8)    #TODO
+    # while task.enabled and task._combat_active:  # 等待二值化条件满足 (calculate_binary_percentage 内部自动刷帧)
+    #     if box and calculate_binary_percentage(task, box, 192) < 0.05: #0.07859078
+    #         break
+    #     time.sleep(0.05) 
+    time.sleep(1.5)    #TODO
+    # continuous_click(task, 1.8)
     task.log_info(f"{CHARACTER_NAME} 回路足够释放e")    
     while task.enabled and task._combat_active:  #
         task.send_key("e")
@@ -101,11 +102,11 @@ def _action_3aezr(task):
         if not check_skill_available(task, "e",skill_image="Mornye_e"):
             break
     task.log_info(f"{CHARACTER_NAME} 等待z")    
-    while task.enabled and task._combat_active:  # 等待二值化条件满足 (calculate_binary_percentage 内部自动刷帧)
-        if box and calculate_binary_percentage(task, box, 192) < 0.05: #0.07859078
-            break
-        time.sleep(0.05)    
-    time.sleep(0.7)     #  z 
+    # while task.enabled and task._combat_active:  # 等待二值化条件满足 (calculate_binary_percentage 内部自动刷帧)
+    #     if box and calculate_binary_percentage(task, box, 192) < 0.05: #0.07859078
+    #         break
+    #     time.sleep(0.05)    
+    time.sleep(2)     #  z 
     # wait r
     task.log_info(f"{CHARACTER_NAME} 等待r") 
     while task.enabled and task._combat_active:  # 
@@ -137,7 +138,7 @@ def _action_3aezr(task):
 def _action_skill_coordination(task):
     """变奏动作"""
     task._character_jumping = True  # 标记角色跳跃中
-    continuous_click(task, 0.70)  # 持续点击 0.8 秒
+    continuous_click(task, 1.6)  # 持续点击 0.8 秒
     return True
 
 

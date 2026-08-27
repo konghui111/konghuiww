@@ -2,18 +2,69 @@ import time  # 导入时间模块, 用 time.sleep 代替 task.sleep (子线程�
 from src.character import get_location_box, wait_for_my_turn, continuous_click, register_action, CharType, SwitchPriority, Elements  # 导入共享工具函数和枚举
 from src.character import get_axis_command, set_axis_result  # 导入轴命令机制函数
 from src.character import freeze_time, find_sub_dps_slot, check_skill_available, check_buff,get_my_slot
-from src.character import check_skill_available_by_color
-CHARACTER_NAME = "character"  # 角色名, 对应 COCO 标注中的 category 后缀
+from src.character import check_skill_available_by_color,continuous_send_key
+CHARACTER_NAME = "jianxin"  # 角色名, 对应 COCO 标注中的 category 后缀
 CHAR_TYPE = CharType.SUB_DPS  # 角色定位: 主输出
 SWITCH_PRIORITY = SwitchPriority.NORMAL  # 切换优先级: 普通
-ELEMENT = Elements.HAVOC  # 角色属性: 衍射 (对应协奏值环颜色索引 0)
+ELEMENT = Elements.WIND  # 角色属性: 衍射 (对应协奏值环颜色索引 0)
 RESONANCE_CHAIN = 0  # 共鸣链等级 (0-6)
 
+def _action_z(task):
+    continuous_click(task, 0.2)
+register_action(CHARACTER_NAME, "z")
 
-def _action_ea3(task):
-    continuous_click(task, 0.3)
+def _action_main(task):
+    # while task.enabled and task._combat_active:  
+    #     if check_skill_available(task, "r",skill_image="jianxin_r"):
+    #         break
+    #     # task.click()
+    #     time.sleep(0.05)    
+    # while task.enabled and task._combat_active:  
+    #     if not check_skill_available(task, "r",skill_image="jianxin_r"):
+    #         break
+    #     task.send_key("r")
+    #     time.sleep(0.05)
+    # task.send_key("r")
+    continuous_send_key(task, "r",2)
+    time.sleep(1)    
+    while task.enabled and task._combat_active:  
+        if check_skill_available(task, "q"):
+            break
+        time.sleep(0.05)
+    while task.enabled and task._combat_active:  
+        if check_skill_available(task, "e",skill_image="jianxin_e"):
+            break
+        time.sleep(0.05)    
+    while task.enabled and task._combat_active:  
+        if not check_skill_available(task, "e",skill_image="jianxin_e"):
+            break
+        task.send_key("e")
+        time.sleep(0.05)
+    time.sleep(0.2)    
+    task.mouse_down()
+    time.sleep(1.5)
+    task.mouse_up()
+    time.sleep(0.01)
+    task.click()
+    # while task.enabled and task._combat_active:  
+    #     if not check_skill_available(task, "q"):
+    #         break
+    #     task.send_key("q")
+    #     time.sleep(0.05)    
+    # task.send_key("q")    
+    # time.sleep(0.1)
+    # task.send_key("e")    
+    while task.enabled and task._combat_active:
+        if _check_special_skill(task):
+            break
+        task.send_key("e")
+        task.click()
+        time.sleep(0.05)
+    task.send_key("q")    
+    time.sleep(0.05)
+    task.right_click()
     return True
-register_action(CHARACTER_NAME, "ea3")  # 注册动作 ea3
+register_action(CHARACTER_NAME, "main")  # 注册动作 main
 
 
 
@@ -37,7 +88,7 @@ def _action_skill_coordination(task):  # 特殊技能-变奏: 新登场角色触
     被特殊技能强制切换上场后执行的变奏动作。
     触发时清空残留的 end_time, 打断上个动作 (强制置为已完成)。
     """
-    continuous_click(task, 0.80)
+    continuous_click(task, 0.7)
     return True
 register_action(CHARACTER_NAME, "skill_coordination", force_clear=True)  # 注册变奏动作
 
@@ -68,20 +119,16 @@ def run(task):  # 脚本入口函数, 由 CharacterAutoTask 在子线程中调�
         axis_action = get_axis_command(task, CHARACTER_NAME)  # 获取并清除轴命令
         if axis_action:  # 有轴命令
             task.log_info(f"{CHARACTER_NAME} 收到轴命令: {axis_action}")
-            if axis_action == "ea3":  # 轴命令执行 ea3
-                action_success = _action_ea3(task)
-            elif axis_action == "a4":  # 轴命令执行 a4
-                action_success = _action_a4(task)
+            if axis_action == "main":  # 轴命令执行 ea3
+                action_success = _action_main(task)
+            elif axis_action == "z":  # 轴命令执行 ea3
+                action_success = _action_z(task)
             else:  # 未知动作
                 task.log_error(f"轴配置错误: {CHARACTER_NAME} 未知动作 {axis_action}")
             # 报告轴执行结果
             set_axis_result(task, CHARACTER_NAME, action_success)
         else:  # 无轴命令, 自动模式
-            if attack_counts[0] == 0:
-                action_success = _action_ea3(task)
-            elif attack_counts[0] == 3:
-                action_success = _action_a4(task)
-            time.sleep(0.01)
+            time.sleep(0.1)
 
         if action_success:  # 动作成功执行
             # 自动模式下: 检测特殊技能并切换角色 (打轴模式由 task 控制切换, 不执行此逻辑)

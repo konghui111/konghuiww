@@ -10,23 +10,23 @@ ELEMENT = Elements.WIND  # 角色属性: 衍射 (对应协奏值环颜色索引 
 RESONANCE_CHAIN = 0  # 共鸣链等级 (0-6)
 
 
-def _action_a(task):
-    continuous_click(task, 0.1)
+def _action_a234(task):
+    continuous_click(task, 1)
     return True
-register_action(CHARACTER_NAME, "a")  # 注册动作 a
+register_action(CHARACTER_NAME, "a234")  # 注册动作 a
 
 def _action_a12(task):
     while task.enabled and task._combat_active:
         if check_skill_available(task, "e", skill_image="qingxiao_a12_e"):  # 机兵e可用
             break
         task.click()
-        time.sleep(0.07)  # 轮询间隔
+        time.sleep(0.05)  # 轮询间隔
     return True
 register_action(CHARACTER_NAME, "a12")  # 注册动作 a12
 
 def _action_a123(task):
     _action_a12(task)
-    continuous_click(task, 0.5)
+    continuous_click(task, 0.6)
     return True
 register_action(CHARACTER_NAME, "a123")  # 注册动作 a123
 
@@ -57,8 +57,8 @@ def _action_main(task):
             break 
         time.sleep(0.07)   
     #循环按F 0.2秒
-    time.sleep(0.3)
-    continuous_send_key(task,"f", 0.1)
+    # time.sleep(0.3)
+    continuous_send_key(task,"f", 0.6)
     #r
     while task.enabled and task._combat_active:
         if check_skill_available(task, "r", skill_image="qingxiao_r"):  
@@ -124,8 +124,8 @@ def run(task):  # 脚本入口函数, 由 CharacterAutoTask 在子线程中调�
         axis_action = get_axis_command(task, CHARACTER_NAME)  # 获取并清除轴命令
         if axis_action:  # 有轴命令
             task.log_info(f"{CHARACTER_NAME} 收到轴命令: {axis_action}")
-            if axis_action == "a":  # 普攻
-                action_success = _action_a(task)
+            if axis_action == "a234":  # 普攻
+                action_success = _action_a234(task)
             elif axis_action == "a12":  # a12 连招
                 action_success = _action_a12(task)
             elif axis_action == "a123":  # a123 连招

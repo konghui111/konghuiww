@@ -6,7 +6,7 @@ import json as json_module  # 导入 json, 用于轴文件的保存和加载
 
 from PySide6.QtWidgets import (QDialog, QVBoxLayout, QHBoxLayout, QLabel, QPushButton,  # 导入 GUI 组件
                                QListWidget, QListWidgetItem, QScrollArea, QWidget,
-                               QFileDialog, QMessageBox, QCheckBox, QListView, QFrame)
+                               QFileDialog, QMessageBox, QCheckBox, QListView, QFrame, QGridLayout)
 from PySide6.QtCore import Qt, QMimeData, QSize  # 导入 Qt 核心
 from PySide6.QtGui import QDrag, QPixmap  # 导入绘图相关
 
@@ -572,9 +572,12 @@ class CharacterSelectionDialog(QDialog):  # 角色选择对话框
 
         layout.addWidget(QLabel("选择最多3个角色:"))
 
-        # 角色选择区域 (横向排列, 显示头像)
-        char_layout = QHBoxLayout()  # 水平布局
+        # 角色选择区域 (网格排列, 自动换行)
+        char_layout = QGridLayout()  # 网格布局, 角色多时自动换行
+        char_layout.setSpacing(12)  # 卡片间距
         self.char_labels = {}  # 角色选择标签字典
+        col = 0  # 当前列号
+        max_cols = 8  # 每行最多显示 4 个角色
         for name in CHARACTER_LIBRARY:  # 遍历角色库
             # 创建角色卡片 (头像 + 选择框)
             card_widget = QWidget()
@@ -607,7 +610,8 @@ class CharacterSelectionDialog(QDialog):  # 角色选择对话框
             # 卡片样式
             card_widget.setStyleSheet(f"background-color: {BG_CARD}; border: 1px solid {BORDER_COLOR}; border-radius: 8px;")
             card_widget.setFixedWidth(120)
-            char_layout.addWidget(card_widget)
+            char_layout.addWidget(card_widget, col // max_cols, col % max_cols)  # 按网格位置添加
+            col += 1  # 列号递增
         layout.addLayout(char_layout)
 
         # 按钮区域

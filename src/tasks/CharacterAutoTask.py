@@ -12,7 +12,7 @@ from PySide6.QtCore import Qt  # 导入 Qt 常量
 from qfluentwidgets import FluentIcon, PushButton  # 导入图标和按钮控件
 
 from src.tasks.MyBaseTask import MyBaseTask  # 导入项目自定义基类
-from src.character import CHARACTER_LIBRARY, detect_hotkey, ACTION_REGISTRY, CharType, get_location_box  # 导入角色库和角色检测函数
+from src.character import CHARACTER_LIBRARY, detect_hotkey, ACTION_REGISTRY, CharType, get_location_box,calculate_binary_percentage,check_skill_available_binary  # 导入角色库和角色检测函数
 from src.tasks.AxisEditor import Axis, AxisEditorDialog, CharacterSelectionDialog  # 导入轴编辑器模块
 from src.tasks.CharacterEditor import CharacterEditorDialog  # 导入角色编辑器
 from src.character.fg_time_collector import FgTimeCollector  # 导入 fg_time 自动收集器
@@ -320,24 +320,23 @@ class CharacterAutoTask(MyBaseTask):
 
     def _precompute_con_data(self):  # 预计算协奏值检测所需的所有静态数据
         """
-        角色识别完成后调用, 一次性计算所有槽位的协奏检测数据:
-        环形掩膜、颜色边界 (numpy)、最小面积阈值。
-        战斗中 is_con_full 直接使用这些预计算数据, 只需截帧+裁剪+找色。
+        角色识别完成后调用, 一次性计算每个槽位的颜色边界。
+        战斗中 is_con_full 使用 forte_location 区域找色判断能量是否满。
         """
         self._con_data = {}  # 清空旧的预计算数据
-        con_box = self.box_of_screen_scaled(3840, 2160, 1431, 1942, 1557, 2068, name='con_full', hcenter=True)
-        min_area = 1500 / 3840 / 2160 * self.screen_width * self.screen_height  # 按分辨率缩放
-        self.next_frame()  # 获取一帧用于计算掩膜尺寸
-        cropped = con_box.crop_frame(self.frame)  # 裁剪出协奏值环区域
-        h, w = cropped.shape[:2]  # 裁剪区域尺寸
-        center = (w // 2, h // 2)  # 中心点
+        # con_box = self.box_of_screen_scaled(3840, 2160, 1431, 1942, 1557, 2068, name='con_full', hcenter=True)
+        # min_area = 1500 / 3840 / 2160 * self.screen_width * self.screen_height  # 按分辨率缩放
+        # self.next_frame()  # 获取一帧用于计算掩膜尺寸
+        # cropped = con_box.crop_frame(self.frame)  # 裁剪出协奏值环区域
+        # h, w = cropped.shape[:2]  # 裁剪区域尺寸
+        # center = (w // 2, h // 2)  # 中心点
 
-        # 预计算环形掩膜 (甜甜圈形状, 只依赖图像尺寸, 战斗中不变)
-        r1 = int(Decimal(str(h * 0.35119)).quantize(Decimal('0'), rounding=ROUND_DOWN))  # 内半径
-        r2 = int(Decimal(str(h * 0.42261)).quantize(Decimal('0'), rounding=ROUND_UP))  # 外半径
-        ring_mask = np.zeros((h, w), dtype=np.uint8)  # 创建掩膜
-        cv2.circle(ring_mask, center, r2, 255, -1)  # 填充外圆
-        cv2.circle(ring_mask, center, r1, 0, -1)  # 挖空内圆
+        # # 预计算环形掩膜 (甜甜圈形状, 只依赖图像尺寸, 战斗中不变)
+        # r1 = int(Decimal(str(h * 0.35119)).quantize(Decimal('0'), rounding=ROUND_DOWN))  # 内半径
+        # r2 = int(Decimal(str(h * 0.42261)).quantize(Decimal('0'), rounding=ROUND_UP))  # 外半径
+        # ring_mask = np.zeros((h, w), dtype=np.uint8)  # 创建掩膜
+        # cv2.circle(ring_mask, center, r2, 255, -1)  # 填充外圆
+        # cv2.circle(ring_mask, center, r1, 0, -1)  # 挖空内圆
 
         for slot in self._detected_characters:  # 为每个已识别角色预计算
             name = self._detected_characters[slot]  # 角色名
@@ -348,12 +347,9 @@ class CharacterAutoTask(MyBaseTask):
             lower = np.array([color_range['b'][0], color_range['g'][0], color_range['r'][0]], dtype="uint8")
             upper = np.array([color_range['b'][1], color_range['g'][1], color_range['r'][1]], dtype="uint8")
             self._con_data[slot] = {
-                'box': con_box,  # 协奏值区域 Box
                 'lower': lower,  # 颜色下界 (numpy)
                 'upper': upper,  # 颜色上界 (numpy)
-                'min_area': min_area,  # 最小有效面积
-                'mask': ring_mask,  # 环形掩膜 (numpy)
-                'color_index': color_index,  # 颜色索引, 用于查找 _con_full_size
+                'color_index': color_index,  # 颜色索引
             }
             self.log_info(f"预计算槽位{slot} ({name}) 协奏数据: 颜色索引={color_index}")
 
@@ -779,7 +775,7 @@ class CharacterAutoTask(MyBaseTask):
             if len(contours) != 1:  # 不是单个轮廓
                 return False
             contour = contours[0]  # 取唯一轮廓
-            epsilon = 0.02 * cv2.arcLength(contour, True)  # 近似精度
+            epsilon = 0.05 * cv2.arcLength(contour, True)  # 近似精度
             approx = cv2.approxPolyDP(contour, epsilon, True)  # 多边形近似
             if not cv2.isContourConvex(approx) or len(approx) < 4:  # 非凸或顶点太少
                 return False
@@ -826,11 +822,9 @@ class CharacterAutoTask(MyBaseTask):
                 percent = 0.99  # 修正为 0.99
         return min(percent, 1.0)  # 限制最大值为 1.0
 
-    def is_con_full(self, slot):  # 检查指定槽位角色的协奏值是否已满 (纯找色, 极速)
+    def is_con_full(self, slot):  # 检查指定槽位角色的协奏值是否已满
         """
-        检查指定槽位角色的协奏值是否已满。
-        使用预计算的掩膜和颜色边界, 只需截帧+裁剪+找色, 无连通域分析。
-        首次检测到满时调用 _count_rings 校准 _con_full_size。
+        在 forte_location 区域找色, 颜色占比 >= 99% 认为能量已满。
         :param slot: 角色槽位编号 (1/2/3)
         :return: True 如果协奏值已满, 否则 False
         """
@@ -846,34 +840,28 @@ class CharacterAutoTask(MyBaseTask):
             module = CHARACTER_LIBRARY.get(char_name)  # 获取角色模块
             char_type = getattr(module, "CHAR_TYPE", None)  # 获取角色定位
             if char_type in (CharType.SUB_DPS, CharType.HEALER):  # 副C 或 治疗
-                location_box = get_location_box(self, f"character{suisui_slot}_location")  # 获取 suisui 槽位区域
+                location_box = get_location_box(self, f"suisui_buff_location")  # 获取 suisui 槽位区域
                 if location_box:  # 区域存在
-                    self.next_frame()  # 获取新帧
-                    suisui_color = {'b': (180, 186), 'g': (251, 257), 'r': (229, 235)}  # 找色范围
-                    pct = self.calculate_color_percentage(suisui_color, location_box)  # 在 suisui 区域计算颜色占比
-                    suisui_check = pct < 0.009  # 占比小于阈值才通过 0.007875 2格
+                    suisui_check = not check_skill_available_binary(self,"suisui_buff",threshold=180, white_threshold=0.5)
                 else:
                     suisui_check = False  # 区域不存在, 检查不通过
 
+        # ---- forte_location 找色判断能量是否满 ----
         data = self._con_data.get(slot)  # 获取预计算数据
         if not data:  # 无预计算数据
             return False
-        self.next_frame()  # 获取新帧 (如果 suisui 检查已截帧, 这里刷新一帧用于环检测)
-        cropped = data['box'].crop_frame(self.frame)  # 裁剪出协奏值环区域
-        masked = cv2.bitwise_and(cropped, cropped, mask=data['mask'])  # 应用预计算的环形掩膜
-        color_mask = cv2.inRange(masked, data['lower'], data['upper'])  # 颜色过滤 (找色)
-        pixel_count = cv2.countNonZero(color_mask)  # 统计匹配像素数
-        if pixel_count < data['min_area']:  # 像素数不足以构成环
+        forte_box = get_location_box(self, "forte_location")  # 获取能量条区域
+        if not forte_box:  # 区域不存在
+            self.log_warning(f"forte_location 区域不存在, 无法检测协奏值")
             return False
-        color_index = data['color_index']  # 预计算的颜色索引
-        if self._con_full_size.get(str(color_index), 0) > 0:  # 已校准, 有参考值
-            return suisui_check and pixel_count >= self._con_full_size[str(color_index)]  # 与上 suisui 检查结果
-        # 首次校准: 用连通域分析确认是否完整环
-        area, is_full = self._count_rings(cropped, slot)  # 完整分析
-        if is_full:  # 确认是完整环
-            self._con_full_size[str(color_index)] = area  # 记录校准值
-            return suisui_check  # 与上 suisui 检查结果
-        return False  # 不是完整环
+        self.next_frame()  # 获取新帧
+        cropped = forte_box.crop_frame(self.frame)  # 裁剪出能量条区域
+        color_mask = cv2.inRange(cropped, data['lower'], data['upper'])  # 按角色属性颜色过滤
+        total_pixels = cropped.shape[0] * cropped.shape[1]  # 区域总像素数
+        color_pixels = cv2.countNonZero(color_mask)  # 匹配颜色的像素数
+        pct = color_pixels / total_pixels if total_pixels > 0 else 0  # 颜色占比
+        is_full = pct >= 0.99  # 99% 以上认为能量已满
+        return suisui_check and is_full  # 与上 suisui 检查结果
 
     def _run_script(self, module, slot):  # 执行角色库中的脚本模块
         try:
