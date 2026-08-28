@@ -2,20 +2,113 @@ import time  # 导入时间模块, 用 time.sleep 代替 task.sleep (子线程�
 from src.character import get_location_box, wait_for_my_turn, continuous_click, register_action, CharType, SwitchPriority, Elements  # 导入共享工具函数和枚举
 from src.character import get_axis_command, set_axis_result  # 导入轴命令机制函数
 from src.character import freeze_time, find_sub_dps_slot, check_skill_available, check_buff,get_my_slot
-from src.character import check_skill_available_by_color,detect_self_on_field
-CHARACTER_NAME = "character"  # 角色名, 对应 COCO 标注中的 category 后缀
+from src.character import check_skill_available_by_color,detect_self_on_field,f_execute
+CHARACTER_NAME = "qiuyuan"  # 角色名, 对应 COCO 标注中的 category 后缀
 CHAR_TYPE = CharType.SUB_DPS  # 角色定位: 主输出
 SWITCH_PRIORITY = SwitchPriority.NORMAL  # 切换优先级: 普通
-ELEMENT = Elements.HAVOC  # 角色属性: 衍射 (对应协奏值环颜色索引 0)
+ELEMENT = Elements.WIND  # 角色属性: 衍射 (对应协奏值环颜色索引 0)
 RESONANCE_CHAIN = 0  # 共鸣链等级 (0-6)
 
 
-def _action_ea3(task):
-    continuous_click(task, 0.3)
+def _action_a12(task):
+    continuous_click(task, 0.6)
     return True
-register_action(CHARACTER_NAME, "ea3")  # 注册动作 ea3
 
+def _action_e(task):
+    while task.enabled and task._combat_active:
+        if check_skill_available(task, "e",skill_image="qiuyuan_e"):
+            break
+        time.sleep(0.05)
+    while task.enabled and task._combat_active:
+        if not check_skill_available(task, "e",skill_image="qiuyuan_e"):
+            break
+        task.send_key("e")
+        time.sleep(0.05) 
+    time.sleep(0.2)
+    f_execute(task,1.6)
+    return True
+register_action(CHARACTER_NAME, "e")  # 注册动作 e
 
+def _action_start(task):
+    #重击升空松开左键
+    time.sleep(0.5)
+    task.mouse_up()
+    time.sleep(0.4)
+    #落地长按左键刺击，自动升空松开左键
+    task.mouse_down()
+    time.sleep(0.5)
+    task.mouse_up()
+    time.sleep(0.5)
+    continuous_click(task, 0.1)
+    #点按普攻到第一格能量出现
+    #r
+    while task.enabled and task._combat_active:
+        if check_skill_available(task, "r",skill_image="qiuyuan_r"):
+            break
+        time.sleep(0.05)
+    while task.enabled and task._combat_active:
+        if not check_skill_available(task, "r",skill_image="qiuyuan_r"):
+            break
+        task.send_key("r")
+        time.sleep(0.05)  
+    time.sleep(2)
+    while task.enabled and task._combat_active:  
+        if detect_self_on_field(task, CHARACTER_NAME):
+            break
+        time.sleep(0.05)          
+    time.sleep(0.05)     
+    #a12闪避
+    _action_a12(task)
+    task.send_key("q")
+    #a12
+    task.right_click(after_sleep=0.5)
+    _action_a12(task)
+    #z
+    task.mouse_down()
+    while task.enabled and task._combat_active:  
+        if _check_special_skill(task):
+            break
+        time.sleep(0.07)  
+    task.mouse_up()
+    # task.send_key("q")
+    return True
+register_action(CHARACTER_NAME, "start")  # 注册动作 start
+
+def _action_main(task):
+    #普攻到满能量
+    _action_a12(task)
+    #R
+    while task.enabled and task._combat_active:
+        if check_skill_available(task, "r",skill_image="qiuyuan_r"):
+            break
+        time.sleep(0.05)
+    while task.enabled and task._combat_active:
+        if not check_skill_available(task, "r",skill_image="qiuyuan_r"):
+            break
+        task.send_key("r")
+        time.sleep(0.05)  
+    time.sleep(2)
+    task.mouse_down()
+    while task.enabled and task._combat_active:  
+        if detect_self_on_field(task, CHARACTER_NAME):
+            break
+        time.sleep(0.05)          
+    time.sleep(0.05)    
+    #重击
+    #满协奏
+    while task.enabled and task._combat_active:  
+        if _check_special_skill(task):
+            break
+        time.sleep(0.05)  
+    task.mouse_up()
+    #q
+    while task.enabled and task._combat_active:
+        if not check_skill_available(task, "q"):
+            break
+        task.send_key("q")
+        time.sleep(0.05)
+    return True
+register_action(CHARACTER_NAME, "main")  # 注册动作 main
 
 def _check_special_skill(task):  # 检测协奏值是否已满 (特殊技能是否可以释放)
     """
@@ -37,7 +130,7 @@ def _action_skill_coordination(task):  # 特殊技能-变奏: 新登场角色触
     被特殊技能强制切换上场后执行的变奏动作。
     触发时清空残留的 end_time, 打断上个动作 (强制置为已完成)。
     """
-    continuous_click(task, 0.80)
+    continuous_click(task, 2)
     return True
 register_action(CHARACTER_NAME, "skill_coordination", force_clear=True)  # 注册变奏动作
 
@@ -68,20 +161,21 @@ def run(task):  # 脚本入口函数, 由 CharacterAutoTask 在子线程中调�
         axis_action = get_axis_command(task, CHARACTER_NAME)  # 获取并清除轴命令
         if axis_action:  # 有轴命令
             task.log_info(f"{CHARACTER_NAME} 收到轴命令: {axis_action}")
-            if axis_action == "ea3":  # 轴命令执行 ea3
-                action_success = _action_ea3(task)
-            elif axis_action == "a4":  # 轴命令执行 a4
-                action_success = _action_a4(task)
+            if axis_action == "e":  # e 技能
+                action_success = _action_e(task)
+            elif axis_action == "start":  # 启动连招
+                action_success = _action_start(task)
+            elif axis_action == "main":  # 主连招
+                action_success = _action_main(task)
+            elif axis_action == "skill_coordination":  # 变奏
+                action_success = _action_skill_coordination(task)
             else:  # 未知动作
                 task.log_error(f"轴配置错误: {CHARACTER_NAME} 未知动作 {axis_action}")
             # 报告轴执行结果
             set_axis_result(task, CHARACTER_NAME, action_success)
         else:  # 无轴命令, 自动模式
-            if attack_counts[0] == 0:
-                action_success = _action_ea3(task)
-            elif attack_counts[0] == 3:
-                action_success = _action_a4(task)
-            time.sleep(0.01)
+            task.log_info(f"{CHARACTER_NAME} 暂不支持自动模式")
+            time.sleep(0.1)
 
         if action_success:  # 动作成功执行
             # 自动模式下: 检测特殊技能并切换角色 (打轴模式由 task 控制切换, 不执行此逻辑)

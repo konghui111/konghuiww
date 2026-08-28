@@ -1,0 +1,12 @@
+{
+  "startup": [
+    {
+      "character": "feixue",
+      "action": "main"
+    }
+  ],
+  "loop": [],
+  "loop2": [],
+  "loop3": [],
+  "finish": []
+}

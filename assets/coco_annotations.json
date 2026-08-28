@@ -281,6 +281,36 @@
             "file_name": "images/1.png",
             "width": 2560,
             "height": 1440
+        },
+        {
+            "id": 53,
+            "file_name": "images/17.png",
+            "width": 2560,
+            "height": 1440
+        },
+        {
+            "id": 54,
+            "file_name": "images/8.png",
+            "width": 2560,
+            "height": 1440
+        },
+        {
+            "id": 55,
+            "file_name": "images/5.png",
+            "width": 2560,
+            "height": 1440
+        },
+        {
+            "id": 56,
+            "file_name": "images/18.png",
+            "width": 2560,
+            "height": 1440
+        },
+        {
+            "id": 57,
+            "file_name": "images/19.png",
+            "width": 2560,
+            "height": 1440
         }
     ],
     "annotations": [
@@ -1388,6 +1418,188 @@
             ],
             "area": 24,
             "iscrowd": 0
+        },
+        {
+            "id": 86,
+            "image_id": 53,
+            "category_id": 86,
+            "bbox": [
+                2360,
+                303,
+                50,
+                50
+            ],
+            "area": 2500,
+            "iscrowd": 0
+        },
+        {
+            "id": 87,
+            "image_id": 53,
+            "category_id": 87,
+            "bbox": [
+                2386,
+                1288,
+                48,
+                24
+            ],
+            "area": 1152,
+            "iscrowd": 0
+        },
+        {
+            "id": 88,
+            "image_id": 53,
+            "category_id": 88,
+            "bbox": [
+                2148,
+                1283,
+                36,
+                30
+            ],
+            "area": 1080,
+            "iscrowd": 0
+        },
+        {
+            "id": 89,
+            "image_id": 54,
+            "category_id": 89,
+            "bbox": [
+                2393,
+                1275,
+                42,
+                38
+            ],
+            "area": 1596,
+            "iscrowd": 0
+        },
+        {
+            "id": 90,
+            "image_id": 54,
+            "category_id": 90,
+            "bbox": [
+                1875,
+                1278,
+                51,
+                32
+            ],
+            "area": 1632,
+            "iscrowd": 0
+        },
+        {
+            "id": 91,
+            "image_id": 55,
+            "category_id": 91,
+            "bbox": [
+                1886,
+                1256,
+                40,
+                34
+            ],
+            "area": 1360,
+            "iscrowd": 0
+        },
+        {
+            "id": 92,
+            "image_id": 56,
+            "category_id": 92,
+            "bbox": [
+                2362,
+                671,
+                50,
+                50
+            ],
+            "area": 2500,
+            "iscrowd": 0
+        },
+        {
+            "id": 93,
+            "image_id": 56,
+            "category_id": 93,
+            "bbox": [
+                2403,
+                1268,
+                31,
+                29
+            ],
+            "area": 899,
+            "iscrowd": 0
+        },
+        {
+            "id": 94,
+            "image_id": 56,
+            "category_id": 94,
+            "bbox": [
+                2125,
+                1275,
+                32,
+                30
+            ],
+            "area": 960,
+            "iscrowd": 0
+        },
+        {
+            "id": 95,
+            "image_id": 57,
+            "category_id": 95,
+            "bbox": [
+                2406,
+                1286,
+                47,
+                29
+            ],
+            "area": 1363,
+            "iscrowd": 0
+        },
+        {
+            "id": 96,
+            "image_id": 57,
+            "category_id": 96,
+            "bbox": [
+                2143,
+                1275,
+                39,
+                35
+            ],
+            "area": 1365,
+            "iscrowd": 0
+        },
+        {
+            "id": 97,
+            "image_id": 57,
+            "category_id": 97,
+            "bbox": [
+                1884,
+                1273,
+                46,
+                36
+            ],
+            "area": 1656,
+            "iscrowd": 0
+        },
+        {
+            "id": 98,
+            "image_id": 57,
+            "category_id": 98,
+            "bbox": [
+                1125,
+                1308,
+                48,
+                39
+            ],
+            "area": 1872,
+            "iscrowd": 0
+        },
+        {
+            "id": 99,
+            "image_id": 57,
+            "category_id": 99,
+            "bbox": [
+                2358,
+                479,
+                50,
+                50
+            ],
+            "area": 2500,
+            "iscrowd": 0
         }
     ],
     "categories": [
@@ -1814,6 +2026,76 @@
         {
             "id": 85,
             "name": "forte_location",
+            "supercategory": ""
+        },
+        {
+            "id": 86,
+            "name": "character_xigelika",
+            "supercategory": ""
+        },
+        {
+            "id": 87,
+            "name": "verina_r",
+            "supercategory": ""
+        },
+        {
+            "id": 88,
+            "name": "verina_e",
+            "supercategory": ""
+        },
+        {
+            "id": 89,
+            "name": "xigelika_r",
+            "supercategory": ""
+        },
+        {
+            "id": 90,
+            "name": "xigelika_z1",
+            "supercategory": ""
+        },
+        {
+            "id": 91,
+            "name": "xigelika_z2",
+            "supercategory": ""
+        },
+        {
+            "id": 92,
+            "name": "character_shorekeeper",
+            "supercategory": ""
+        },
+        {
+            "id": 93,
+            "name": "shorekeeper_r",
+            "supercategory": ""
+        },
+        {
+            "id": 94,
+            "name": "shorekeeper_e",
+            "supercategory": ""
+        },
+        {
+            "id": 95,
+            "name": "qiuyuan_r",
+            "supercategory": ""
+        },
+        {
+            "id": 96,
+            "name": "qiuyuan_e",
+            "supercategory": ""
+        },
+        {
+            "id": 97,
+            "name": "qiuyuan_z",
+            "supercategory": ""
+        },
+        {
+            "id": 98,
+            "name": "qiuyuan_z1_location",
+            "supercategory": ""
+        },
+        {
+            "id": 99,
+            "name": "character_qiuyuan",
             "supercategory": ""
         }
     ]

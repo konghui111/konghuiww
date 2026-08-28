@@ -124,6 +124,13 @@ def _action_main(task,slot):
         # time.sleep(0.05)
         # task.send_key("space")
         # time.sleep(0.01)
+        time.sleep(0.3)
+        continuous_click(task, 1.05)
+        task.mouse_down()
+        time.sleep(0.5)
+        task.mouse_up()
+        # time.sleep(0.3)
+        continuous_click(task, 0.9)
     else:
         branch_parts.append("execute")  # 处决成功
         continuous_click(task, 0.3)

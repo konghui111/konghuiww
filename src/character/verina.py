@@ -3,17 +3,48 @@ from src.character import get_location_box, wait_for_my_turn, continuous_click, 
 from src.character import get_axis_command, set_axis_result  # 导入轴命令机制函数
 from src.character import freeze_time, find_sub_dps_slot, check_skill_available, check_buff,get_my_slot
 from src.character import check_skill_available_by_color,detect_self_on_field
-CHARACTER_NAME = "character"  # 角色名, 对应 COCO 标注中的 category 后缀
+CHARACTER_NAME = "verina"  # 角色名, 对应 COCO 标注中的 category 后缀
 CHAR_TYPE = CharType.SUB_DPS  # 角色定位: 主输出
 SWITCH_PRIORITY = SwitchPriority.NORMAL  # 切换优先级: 普通
-ELEMENT = Elements.HAVOC  # 角色属性: 衍射 (对应协奏值环颜色索引 0)
+ELEMENT = Elements.SPECTRO  # 角色属性: 衍射 (对应协奏值环颜色索引 0)
 RESONANCE_CHAIN = 0  # 共鸣链等级 (0-6)
 
 
-def _action_ea3(task):
-    continuous_click(task, 0.3)
+def _action_main(task):
+    while task.enabled and task._combat_active:  
+        if check_skill_available(task, "e",skill_image="verina_e"):
+            break
+        time.sleep(0.05) 
+    while task.enabled and task._combat_active:  
+        if not check_skill_available(task, "e",skill_image="verina_e"):
+            break
+        task.send_key("e")
+        task.send_key("q")
+        time.sleep(0.05)  
+    while task.enabled and task._combat_active:  
+        if check_skill_available(task, "r",skill_image="verina_r"):
+            break
+        time.sleep(0.05) 
+    while task.enabled and task._combat_active:  
+        if not check_skill_available(task, "r",skill_image="verina_r"):
+            break
+        task.send_key("r")
+        time.sleep(0.05)
+    time.sleep(2)    
+    while task.enabled and task._combat_active:  
+        if detect_self_on_field(task, CHARACTER_NAME):
+            break
+        time.sleep(0.05)
+    time.sleep(0.1)    
+    task.send_key("space")  
+    time.sleep(0.3)
+    while task.enabled and task._combat_active:  
+        if _check_special_skill(task):
+            break
+        task.click()    
+        time.sleep(0.07)                                  
     return True
-register_action(CHARACTER_NAME, "ea3")  # 注册动作 ea3
+register_action(CHARACTER_NAME, "main")  # 注册动作 ea3
 
 
 
@@ -68,20 +99,17 @@ def run(task):  # 脚本入口函数, 由 CharacterAutoTask 在子线程中调�
         axis_action = get_axis_command(task, CHARACTER_NAME)  # 获取并清除轴命令
         if axis_action:  # 有轴命令
             task.log_info(f"{CHARACTER_NAME} 收到轴命令: {axis_action}")
-            if axis_action == "ea3":  # 轴命令执行 ea3
-                action_success = _action_ea3(task)
-            elif axis_action == "a4":  # 轴命令执行 a4
-                action_success = _action_a4(task)
+            if axis_action == "main":  # 主连招
+                action_success = _action_main(task)
+            elif axis_action == "skill_coordination":  # 变奏
+                action_success = _action_skill_coordination(task)
             else:  # 未知动作
                 task.log_error(f"轴配置错误: {CHARACTER_NAME} 未知动作 {axis_action}")
             # 报告轴执行结果
             set_axis_result(task, CHARACTER_NAME, action_success)
         else:  # 无轴命令, 自动模式
-            if attack_counts[0] == 0:
-                action_success = _action_ea3(task)
-            elif attack_counts[0] == 3:
-                action_success = _action_a4(task)
-            time.sleep(0.01)
+            task.log_info(f"{CHARACTER_NAME} 暂不支持自动模式")
+            time.sleep(0.1)
 
         if action_success:  # 动作成功执行
             # 自动模式下: 检测特殊技能并切换角色 (打轴模式由 task 控制切换, 不执行此逻辑)

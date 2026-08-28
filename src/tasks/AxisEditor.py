@@ -534,7 +534,8 @@ class AxisEditorDialog(QDialog):  # 轴编辑器对话框
             self.finish_timeline.add_action(action.character_name, action.action_name)
 
     def _save_axis(self):  # 保存轴到文件
-        file_path, _ = QFileDialog.getSaveFileName(self, "保存轴", "", "轴文件 (*.json)")
+        default_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'axis')  # 默认保存到 src/axis 目录
+        file_path, _ = QFileDialog.getSaveFileName(self, "保存轴", default_dir, "轴文件 (*.json)")
         if file_path:
             # 从时间线获取动作
             self.axis.startup = self.startup_timeline.get_actions()

@@ -575,6 +575,10 @@ from src.character import Mornye
 from src.character import qingxiao
 from src.character import denia
 from src.character import jianxin
+from src.character import xigelika
+from src.character import verina
+from src.character import shorekeeper
+from src.character import qiuyuan
 
 CHARACTER_LIBRARY = {  # 角色库: 角色名 → 脚本模块, 新增角色在此注册
     "qianxiao": qianxiao,  # 千晓
@@ -586,5 +590,9 @@ CHARACTER_LIBRARY = {  # 角色库: 角色名 → 脚本模块, 新增角色在�
     "Mornye": Mornye,
     "qingxiao": qingxiao,
     "denia": denia,
-    "jianxin": jianxin
+    "jianxin": jianxin,
+    "xigelika": xigelika,
+    "verina": verina,
+    "shorekeeper": shorekeeper,
+    "qiuyuan": qiuyuan,
 }

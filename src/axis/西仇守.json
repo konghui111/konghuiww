@@ -1,0 +1,57 @@
+{
+  "startup": [
+    {
+      "character": "shorekeeper",
+      "action": "qrz"
+    },
+    {
+      "character": "qiuyuan",
+      "action": "start"
+    },
+    {
+      "character": "xigelika",
+      "action": "main"
+    }
+  ],
+  "loop": [
+    {
+      "character": "shorekeeper",
+      "action": "skill_coordination"
+    },
+    {
+      "character": "shorekeeper",
+      "action": "a123"
+    },
+    {
+      "character": "qiuyuan",
+      "action": "e"
+    },
+    {
+      "character": "shorekeeper",
+      "action": "a123"
+    },
+    {
+      "character": "shorekeeper",
+      "action": "z"
+    },
+    {
+      "character": "shorekeeper",
+      "action": "eqr"
+    },
+    {
+      "character": "qiuyuan",
+      "action": "skill_coordination"
+    },
+    {
+      "character": "qiuyuan",
+      "action": "main"
+    },
+    {
+      "character": "xigelika",
+      "action": "main"
+    }
+  ],
+  "loop2": [],
+  "loop3": [],
+  "finish": []
+}

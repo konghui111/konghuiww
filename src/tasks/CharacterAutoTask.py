@@ -3,6 +3,7 @@ import ctypes  # 导入 ctypes 模块, 用于调用 Windows API 注册全局热�
 import ctypes.wintypes  # 导入 Windows 数据类型 (MSG 等)
 import threading  # 导入线程模块, 脚本在子线程中运行, 主线程继续监听热键
 import time  # 导入时间模块, 用于协同函数中的计时和等待
+import importlib  # 导入 importlib 模块, 用于热重载角色脚本
 import numpy as np  # 导入 numpy, 用于协奏值环的颜色掩膜运算
 import cv2  # 导入 OpenCV, 用于协奏值环的形态学运算和轮廓检测
 from decimal import Decimal, ROUND_DOWN, ROUND_UP  # 导入.Decimal 用于精确计算环掩膜半径
@@ -226,18 +227,9 @@ class CharacterAutoTask(MyBaseTask):
         self._axis_index = 0  # 重置轴索引
 
     def _trim_memory(self):
-        """回收 WGC 截图管线和 Python 进程自身的内存缓存"""
+        """回收 Python 进程自身的内存缓存"""
         try:
-            # 关闭 WGC 捕获会话, 释放 D3D11 设备/Staging Texture/FramePool 等 GPU 资源
-            # 下次截图时 start_or_stop() 会自动重建
-            method = getattr(self.executor, 'method', None)
-            if method and hasattr(method, 'close'):
-                method.close()
-                self.log_info("已关闭 WGC 捕获会话, 释放 GPU 资源")
-        except Exception as e:
-            self.log_warning(f"关闭 WGC 捕获失败: {e}")
-        try:
-            # 回收 Python 自身进程的工作集
+            # 只清理 Python 自身进程的工作集, 不关闭 WGC (关闭后重建耗时 1-3 秒)
             ctypes.windll.psapi.EmptyWorkingSet(ctypes.windll.kernel32.GetCurrentProcess())
             self.log_info("已回收 Python 进程的内存缓存")
         except Exception as e:
@@ -373,7 +365,8 @@ class CharacterAutoTask(MyBaseTask):
 
     def _import_axis(self):  # 导入轴: 从文件加载
         """打开文件对话框, 加载已有的轴文件。"""
-        file_path, _ = QFileDialog.getOpenFileName(None, "导入轴", "", "轴文件 (*.json)")
+        default_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'axis')  # 默认打开 src/axis 目录
+        file_path, _ = QFileDialog.getOpenFileName(None, "导入轴", default_dir, "轴文件 (*.json)")
         if file_path:
             try:
                 axis = Axis.load(file_path)
@@ -386,7 +379,8 @@ class CharacterAutoTask(MyBaseTask):
 
     def _edit_axis(self):  # 编辑轴: 选择已有轴文件, 打开编辑器修改
         """打开文件对话框选择轴文件, 从轴中提取角色后打开编辑器, 可直接修改已有动作。"""
-        file_path, _ = QFileDialog.getOpenFileName(None, "编辑轴", "", "轴文件 (*.json)")
+        default_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'axis')  # 默认打开 src/axis 目录
+        file_path, _ = QFileDialog.getOpenFileName(None, "编辑轴", default_dir, "轴文件 (*.json)")
         if not file_path:  # 用户取消
             return
         try:
@@ -419,6 +413,16 @@ class CharacterAutoTask(MyBaseTask):
             self.log_warning("未识别到角色, 请确认角色图片已标记")
             return
 
+        # 热重载角色脚本 (debug 模式下修改 .py 文件后按 F7 立即生效)
+        for slot, name in self._detected_characters.items():
+            module = CHARACTER_LIBRARY.get(name)
+            if module:
+                try:
+                    importlib.reload(module)
+                    self.log_info(f"已热重载角色脚本: {name}")
+                except Exception as e:
+                    self.log_warning(f"热重载 {name} 失败: {e}")
+
         # 检查战斗模式
         mode = self.config.get("战斗模式", "自动")
         if mode == "打轴":
@@ -428,10 +432,7 @@ class CharacterAutoTask(MyBaseTask):
 
     def _execute_auto_mode(self):  # 自动模式: 使用调度算法自动切换角色
         """原有的自动模式逻辑, 使用 schedule_next_character 进行调度切换。"""
-        # 清理旧的角色脚本线程
-        for t in self._script_threads:
-            if t.is_alive():
-                t.join(timeout=1)  # 等待旧线程结束, 最多等 1 秒
+        # 清理旧的角色脚本线程 (daemon 线程无需等待, _combat_active=False 后它们会自行退出)
         self._script_threads = []  # 清空列表
 
         for slot, name in self._detected_characters.items():  # 遍历识别到的角色
@@ -505,10 +506,7 @@ class CharacterAutoTask(MyBaseTask):
             self.log_error(f"角色不匹配: 轴中需要 {missing_characters}, 但未检测到")
             return
 
-        # 清理旧的角色脚本线程
-        for t in self._script_threads:
-            if t.is_alive():
-                t.join(timeout=1)  # 等待旧线程结束, 最多等 1 秒
+        # 清理旧的角色脚本线程 (daemon 线程无需等待, _combat_active=False 后它们会自行退出)
         self._script_threads = []  # 清空列表
 
         # 启动所有角色脚本线程
@@ -931,4 +929,12 @@ class CharacterAutoTask(MyBaseTask):
             if t.is_alive():
                 t.join(timeout=1)
         self._script_threads = []
-        self._trim_memory()  # 回收 WGC 截图管线产生的内存占用
+        # 任务销毁时关闭 WGC, 释放 GPU 资源 (下次启用任务时会重建)
+        try:
+            method = getattr(self.executor, 'method', None)
+            if method and hasattr(method, 'close'):
+                method.close()
+                self.log_info("任务销毁, 已关闭 WGC 捕获会话")
+        except Exception as e:
+            self.log_warning(f"关闭 WGC 失败: {e}")
+        self._trim_memory()  # 回收 Python 进程内存缓存

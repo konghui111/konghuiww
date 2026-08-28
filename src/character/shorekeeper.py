@@ -3,19 +3,60 @@ from src.character import get_location_box, wait_for_my_turn, continuous_click, 
 from src.character import get_axis_command, set_axis_result  # 导入轴命令机制函数
 from src.character import freeze_time, find_sub_dps_slot, check_skill_available, check_buff,get_my_slot
 from src.character import check_skill_available_by_color,detect_self_on_field
-CHARACTER_NAME = "character"  # 角色名, 对应 COCO 标注中的 category 后缀
+CHARACTER_NAME = "shorekeeper"  # 角色名, 对应 COCO 标注中的 category 后缀
 CHAR_TYPE = CharType.SUB_DPS  # 角色定位: 主输出
 SWITCH_PRIORITY = SwitchPriority.NORMAL  # 切换优先级: 普通
-ELEMENT = Elements.HAVOC  # 角色属性: 衍射 (对应协奏值环颜色索引 0)
+ELEMENT = Elements.SPECTRO  # 角色属性: 衍射 (对应协奏值环颜色索引 0)
 RESONANCE_CHAIN = 0  # 共鸣链等级 (0-6)
 
 
-def _action_ea3(task):
-    continuous_click(task, 0.3)
+def _action_qr(task):
+    while task.enabled and task._combat_active:
+        if check_skill_available(task, "r",skill_image="shorekeeper_r"):
+            break
+        task.click()
+        time.sleep(0.05)
+    while task.enabled and task._combat_active:
+        if not check_skill_available(task, "r",skill_image="shorekeeper_r"):
+            break
+        task.send_key("q")
+        task.send_key("r")
+        time.sleep(0.05)
+    time.sleep(2)
     return True
-register_action(CHARACTER_NAME, "ea3")  # 注册动作 ea3
+register_action(CHARACTER_NAME, "qr")  # 注册动作 qr
 
+def _action_qrz(task):
+    _action_qr(task)
+    task.mouse_down()
+    return True
+register_action(CHARACTER_NAME, "qrz")  # 注册动作 qrz
 
+def _action_a123(task):
+    continuous_click(task, 1)
+    return True
+register_action(CHARACTER_NAME, "a123")  # 注册动作 a123
+
+def _action_z(task):
+    task.mouse_down()
+    time.sleep(0.8)
+    task.mouse_up()
+    return True
+register_action(CHARACTER_NAME, "z")  # 注册动作 z
+
+def _action_eqr(task):
+    while task.enabled and task._combat_active:
+        if check_skill_available(task, "e",skill_image="shorekeeper_e"):
+            break
+        time.sleep(0.05)
+    while task.enabled and task._combat_active:
+        if not check_skill_available(task, "e",skill_image="shorekeeper_e"):
+            break
+        task.send_key("e")
+        time.sleep(0.05)
+    _action_qr(task)
+    return True
+register_action(CHARACTER_NAME, "eqr")  # 注册动作 eqr
 
 def _check_special_skill(task):  # 检测协奏值是否已满 (特殊技能是否可以释放)
     """
@@ -37,7 +78,7 @@ def _action_skill_coordination(task):  # 特殊技能-变奏: 新登场角色触
     被特殊技能强制切换上场后执行的变奏动作。
     触发时清空残留的 end_time, 打断上个动作 (强制置为已完成)。
     """
-    continuous_click(task, 0.80)
+    continuous_click(task, 0.8)
     return True
 register_action(CHARACTER_NAME, "skill_coordination", force_clear=True)  # 注册变奏动作
 
@@ -68,20 +109,25 @@ def run(task):  # 脚本入口函数, 由 CharacterAutoTask 在子线程中调�
         axis_action = get_axis_command(task, CHARACTER_NAME)  # 获取并清除轴命令
         if axis_action:  # 有轴命令
             task.log_info(f"{CHARACTER_NAME} 收到轴命令: {axis_action}")
-            if axis_action == "ea3":  # 轴命令执行 ea3
-                action_success = _action_ea3(task)
-            elif axis_action == "a4":  # 轴命令执行 a4
-                action_success = _action_a4(task)
+            if axis_action == "qr":  # q+r 连招
+                action_success = _action_qr(task)
+            elif axis_action == "qrz":  # q+r+z 连招
+                action_success = _action_qrz(task)
+            elif axis_action == "a123":  # 普攻连招
+                action_success = _action_a123(task)
+            elif axis_action == "z":  # 重击
+                action_success = _action_z(task)
+            elif axis_action == "eqr":  # e+q+r 连招
+                action_success = _action_eqr(task)
+            elif axis_action == "skill_coordination":  # 变奏
+                action_success = _action_skill_coordination(task)
             else:  # 未知动作
                 task.log_error(f"轴配置错误: {CHARACTER_NAME} 未知动作 {axis_action}")
             # 报告轴执行结果
             set_axis_result(task, CHARACTER_NAME, action_success)
         else:  # 无轴命令, 自动模式
-            if attack_counts[0] == 0:
-                action_success = _action_ea3(task)
-            elif attack_counts[0] == 3:
-                action_success = _action_a4(task)
-            time.sleep(0.01)
+            task.log_info(f"{CHARACTER_NAME} 暂不支持自动模式")
+            time.sleep(0.1)
 
         if action_success:  # 动作成功执行
             # 自动模式下: 检测特殊技能并切换角色 (打轴模式由 task 控制切换, 不执行此逻辑)
