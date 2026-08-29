@@ -114,7 +114,9 @@ config = {
     'my_app': ['src.globals', 'Globals'], #可选. 全局单例对象, 可以存放加载的模型, 使用og.my_app调用
     'custom_tabs': [["src.ui.CombatTab", "CombatTab"]],  # 自定义 Tab: 战斗配置
     'onetime_tasks': [  # 用户点击触发的任务
-        ["src.tasks.CharacterAutoTask", "CharacterAutoTask"],
+        ["src.tasks.AxisCombatTask", "AxisCombatTask"],
+        ["src.tasks.AutoCombatTask", "AutoCombatTask"],
+        ["src.tasks.AxisEditorTask", "AxisEditorTask"],
         ["src.tasks.ColorPercentageTask", "ColorPercentageTask"],
         ["src.tasks.MyOneTimeTask", "MyOneTimeTask"],
         ["ok", "DiagnosisTask"],

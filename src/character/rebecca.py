@@ -7,11 +7,61 @@ ELEMENT = Elements.ELECTRIC  # 角色属性: 导电
 RESONANCE_CHAIN = 0  # 共鸣链等级 (0-6)
 
 
-def _action_main(task):
-    # TODO: 实现 Rebecca 的主连招
-    continuous_click(task, 1)
+def _action_r(task):
+    """释放 r 技能: 等待 r 可用 → 持续按 r 直到 r 消失"""
+    while task.enabled and task._combat_active:  # 等待 r 可用
+        if check_skill_available(task, "r", skill_image="rebecca_r"):
+            break
+        time.sleep(0.05)
+    while task.enabled and task._combat_active:  # 持续按 r 直到 r 消失
+        task.send_key("r")
+        time.sleep(0.05)
+        if not check_skill_available(task, "r", skill_image="rebecca_r"):
+            break
     return True
-register_action(CHARACTER_NAME, "main")  # 注册动作 main
+register_action(CHARACTER_NAME, "r")  # 注册动作 r
+
+
+def _action_a12(task):
+    """普攻 a12: 等待 a 可用 → 持续按 a 直到 a 消失"""
+    while task.enabled and task._combat_active:  # 等待 a 可用
+        if check_skill_available(task, "a", skill_image="rebecca_a"):
+            break
+        time.sleep(0.05)
+    while task.enabled and task._combat_active:  # 持续按 a 直到 a 消失
+        task.click()
+        time.sleep(0.05)
+        if not check_skill_available(task, "a", skill_image="rebecca_a"):
+            break
+    return True
+register_action(CHARACTER_NAME, "a12")  # 注册动作 a12
+
+
+def _action_a123(task):
+    """普攻 a123: 等待 a 可用 → 持续按 a 直到 a 消失 (比 a12 更长)"""
+    while task.enabled and task._combat_active:  # 等待 a 可用
+        if check_skill_available(task, "a", skill_image="rebecca_a123"):
+            break
+        time.sleep(0.05)
+    while task.enabled and task._combat_active:  # 持续按 a 直到 a 消失
+        task.click()
+        time.sleep(0.05)
+        if not check_skill_available(task, "a", skill_image="rebecca_a123"):
+            break
+    return True
+register_action(CHARACTER_NAME, "a123")  # 注册动作 a123
+
+
+def _action_z(task):
+    """z: 长按普攻直到 z 图标出现"""
+    task.mouse_down()  # 按住鼠标左键
+    while task.enabled and task._combat_active:  # 等待 z 图标出现
+        if check_skill_available(task, "a", skill_image="rebecca_z"):
+            break
+        time.sleep(0.05)
+    task.mouse_up()  # 松开鼠标左键
+    return True
+register_action(CHARACTER_NAME, "z")  # 注册动作 z
 
 
 def _check_special_skill(task):  # 检测协奏值是否已满 (特殊技能是否可以释放)
@@ -60,8 +110,14 @@ def run(task):  # 脚本入口函数, 由 CharacterAutoTask 在子线程中调�
         axis_action = get_axis_command(task, CHARACTER_NAME)  # 获取并清除轴命令
         if axis_action:  # 有轴命令
             task.log_info(f"{CHARACTER_NAME} 收到轴命令: {axis_action}")
-            if axis_action == "main":  # 主连招
-                action_success = _action_main(task)
+            if axis_action == "r":  # r 技能
+                action_success = _action_r(task)
+            elif axis_action == "a12":  # 普攻 a12
+                action_success = _action_a12(task)
+            elif axis_action == "a123":  # 普攻 a123
+                action_success = _action_a123(task)
+            elif axis_action == "z":  # 长按普攻直到 z 出现
+                action_success = _action_z(task)
             elif axis_action == "skill_coordination":  # 变奏
                 action_success = _action_skill_coordination(task)
             else:  # 未知动作

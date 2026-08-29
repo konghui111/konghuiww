@@ -13,20 +13,20 @@ def _action_er1(task):
             break
         time.sleep(0.05)
     while task.enabled and task._combat_active:  # 持续按 e 直到 e 消失
-        if not check_skill_available(task, "e",skill_image="denia_e"):
-            break
         task.send_key("e")
         time.sleep(0.05)
+        if not check_skill_available(task, "e",skill_image="denia_e"):
+            break
     time.sleep(0.1)
     while task.enabled and task._combat_active:
         if check_skill_available(task, "r",skill_image="denia_r1"):
             break
         time.sleep(0.05)
-    while task.enabled and task._combat_active:
-        if not check_skill_available(task, "r",skill_image="denia_r1"):
-            break
+    while task.enabled and task._combat_active:  # 持续按 r 直到 r1 消失
         task.send_key("r")
         time.sleep(0.05)
+        if not check_skill_available(task, "r",skill_image="denia_r1"):
+            break
     time.sleep(2)    
     while task.enabled and task._combat_active:
         if check_skill_available(task, "e",skill_image="denia_super_e1"):
@@ -64,11 +64,11 @@ def _action_ee(task):
             break
         task.send_key("e")
         time.sleep(0.05)    
-    while task.enabled and task._combat_active:  
+    while task.enabled and task._combat_active:  # 持续按 e 直到 super_e2 消失
+        task.send_key("e")
+        time.sleep(0.05)
         if not check_skill_available(task, "e",skill_image="denia_super_e2"):
             break
-        task.send_key("e")
-        time.sleep(0.05)    
     return True
 register_action(CHARACTER_NAME, "ee")  # 注册动作 eer2
 
@@ -78,20 +78,21 @@ def _action_r2(task):
             break
         task.click()
         time.sleep(0.05)    
-    while task.enabled and task._combat_active:  
-        if not check_skill_available(task, "r",skill_image="denia_r2"):
-            break
+    while task.enabled and task._combat_active:  # 持续按 r 直到 r2 消失
         task.send_key("r")
         time.sleep(0.05)
-    time.sleep(2)    
-    while task.enabled and task._combat_active:  
+        if not check_skill_available(task, "r",skill_image="denia_r2"):
+            break
+    time.sleep(2)
+    while task.enabled and task._combat_active:  # 等待 q 可用
         if check_skill_available(task, "q"):
             break
         time.sleep(0.05)
-    while task.enabled and task._combat_active:  
+    while task.enabled and task._combat_active:  # 持续按 q 直到 q 消失
+        task.send_key("q")
+        time.sleep(0.05)
         if not check_skill_available(task, "q"):
             break
-        task.send_key("q")
         time.sleep(0.05)     
     return True
 register_action(CHARACTER_NAME, "r2")  # 注册动作 eer2

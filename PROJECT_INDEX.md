@@ -1,7 +1,7 @@
 # konghuiww 项目索引
 
 > 鸣潮 (Wuthering Waves) 游戏自动化项目，基于 ok-script 框架 (Python 3.12)
-> 最后更新: 2026-08-22
+> 最后更新: 2026-08-29
 
 ## 目录
 
@@ -25,8 +25,8 @@
 - **框架**: ok-script (ok 包)，提供截图/OCR/模板匹配/输入模拟
 - **打包**: `pyappify.yml` 定义 Windows 打包和 GitHub 更新源
 - **参考项目**: ok-wuthering-waves (`E:\ok-wuthering-waves-master\`)，详见 [9. 参考项目](#9-参考项目)
-- **已注册角色**: qianxiao(千晓), yangyang(秧秧), suisui(穗穗), feixue(飞雪)
-- **未注册模板**: character.py, Aemeath.py, Linnai.py, Mornye.py
+- **已注册角色** (18): qianxiao, yangyang, suisui, feixue, Linnai, Aemeath, Mornye, qingxiao, denia, jianxin, xigelika, verina, shorekeeper, qiuyuan, jinxi, rebecca, Galbrena, Lupa
+- **未注册模板**: character.py
 
 ---
 
@@ -34,38 +34,60 @@
 
 ```
 e:\konghuiww\konghuiww\
-├── main.py                    # 入口
-├── bench_template_match.py    # 基准工具: 模板匹配耗时 (区域/降采样方案对比)
-├── bench_full_pipeline.py     # 基准工具: 截图→识别→返回完整流程耗时
+├── main.py                    # 入口 (release 模式, 精简 GUI)
+├── main_debug.py              # 入口 (debug 模式, 完整 GUI)
+├── bench_template_match.py    # 基准工具: 模板匹配耗时
+├── bench_full_pipeline.py     # 基准工具: 完整流程耗时
+├── API.md                     # ok-script 框架 API 文档
+├── PROJECT_INDEX.md           # 本文件
+├── pyappify.yml               # PyAppify 打包配置 (name: konghuiww)
+├── deploy.txt                 # 发布到更新仓库的文件列表
 ├── src/
 │   ├── config.py              # 应用配置 (窗口捕获, OCR, 热键, 任务注册)
-│   ├── globals.py             # 全局单例占位 (og.my_app 访问)
+│   ├── globals.py             # Globals 类: on_show_main_window 钩子精简 GUI
 │   ├── character/             # 角色战斗脚本 + 共享工具
-│   │   ├── __init__.py        # 枚举, 注册表, 共享函数, 角色库
+│   │   ├── __init__.py        # 枚举, 注册表, 共享函数, 角色库 (16 角色)
 │   │   ├── fg_time_collector.py  # fg_time 自动收集器
 │   │   ├── feixue.py          # 飞雪 (MAIN_DPS, ICE)
 │   │   ├── qianxiao.py        # 千晓 (SUB_DPS, HAVOC)
 │   │   ├── suisui.py          # 穗穗 (HEALER, ICE)
 │   │   ├── yangyang.py        # 秧秧 (MAIN_DPS, HAVOC, DUAL_SKILL)
-│   │   ├── character.py       # 模板角色 (未注册)
-│   │   ├── Aemeath.py         # 模板角色 (未注册)
-│   │   ├── Linnai.py          # 模板角色 (未注册)
-│   │   └── Mornye.py          # 模板角色 (未注册)
+│   │   ├── Linnai.py          # 林奈 (SUB_DPS, SPECTRO)
+│   │   ├── Aemeath.py         # 爱梅斯 (SUB_DPS, FIRE)
+│   │   ├── Mornye.py          # 莫尔涅 (SUB_DPS, HAVOC)
+│   │   ├── qingxiao.py        # 清晓 (SUB_DPS, WIND)
+│   │   ├── denia.py           # 丹妮亚 (SUB_DPS, FIRE)
+│   │   ├── jianxin.py         # 鉴心 (MAIN_DPS)
+│   │   ├── xigelika.py        # 西格丽卡 (MAIN_DPS, SPECTRO)
+│   │   ├── verina.py          # 维里娜 (SUB_DPS, SPECTRO)
+│   │   ├── shorekeeper.py     # 守岸人 (SUB_DPS, SPECTRO)
+│   │   ├── qiuyuan.py         # 秋园 (SUB_DPS, WIND)
+│   │   ├── jinxi.py           # 今汐 (MAIN_DPS, SPECTRO, 骨架)
+│   │   ├── rebecca.py         # 雷贝卡 (MAIN_DPS, ELECTRIC, 骨架)
+│   │   └── character.py       # 模板角色 (未注册)
+│   ├── axis/                  # 轴 JSON 文件 (从 src/character/ 独立出来)
+│   │   └── *.json             # 各队伍轴配置
 │   ├── tasks/
-│   │   ├── CharacterAutoTask.py  # 主战斗任务 (905行, 热键/检测/自动/打轴)
+│   │   ├── CombatBaseTask.py     # 战斗基类 (热键/角色检测/协奏/内存回收, 共享逻辑)
+│   │   ├── AxisCombatTask.py     # 打轴战斗任务 (继承 CombatBaseTask, 轴命令/执行/fg_time)
+│   │   ├── AutoCombatTask.py     # 自动战斗任务 (继承 CombatBaseTask, 骨架待开发, 默认 F8)
+│   │   ├── AxisEditorTask.py     # 轴编辑工具任务 (新建轴/编辑轴/编辑角色)
+│   │   ├── CharacterAutoTask.py  # 旧版战斗任务 (已拆分, 保留备份)
 │   │   ├── AxisEditor.py         # 轴编辑器 GUI + 数据结构
-│   │   ├── CharacterEditor.py    # 角色属性编辑器 GUI
+│   │   ├── CharacterEditor.py    # 角色属性编辑器 GUI (网格布局, 每行6角色)
 │   │   ├── MyBaseTask.py         # 自定义基类
 │   │   ├── MyOneTimeTask.py      # 示例一次性任务
 │   │   ├── MyTriggerTask.py      # 示例触发器任务
 │   │   └── ColorPercentageTask.py # 找色工具任务
 │   └── ui/
+│       ├── CombatTab.py       # 自定义战斗配置 Tab (main 模式唯一可见页面)
 │       └── MyTab.py           # 自定义标签页示例
 ├── assets/
-│   ├── coco_annotations.json  # COCO 标注 (33 个特征类别, 基于 2560x1440)
-│   └── images/                # 源截图 (0.png~3.png)
+│   ├── coco_annotations.json  # COCO 标注 (特征类别, 基于 2560x1440)
+│   └── images/                # 源截图 (0.png~19.png)
 ├── configs/                   # 运行时配置 (git-ignored)
 ├── .agents/skills/            # Qwen Code skill 定义
+│   └── ok-character-codegen/  # 从文字轴描述生成角色代码的 skill
 └── references/
     └── ok-script-resolution.md  # ok-script 分辨率自适应参考文档
 ```
@@ -78,10 +100,22 @@ e:\konghuiww\konghuiww\
 
 | 文件 | 角色名 | 定位 | 属性 | 优先级 | 共鸣链 | 已注册动作 |
 |------|--------|------|------|--------|--------|-----------|
-| feixue.py | feixue | MAIN_DPS | ICE | NORMAL | 0 | aa, ea, main, skill_coordination |
+| feixue.py | feixue | MAIN_DPS | ICE | NORMAL | 0 | main, skill_coordination |
 | qianxiao.py | qianxiao | SUB_DPS | HAVOC | NORMAL | 0 | ea3, a4, z, qre, super_z2a3, super_a4, skill_coordination |
 | suisui.py | suisui | HEALER | ICE | NORMAL | 0 | aaaa, normal_a23, super_a12, a4e, ea4qr, skill_coordination, skill_coordination_z |
-| yangyang.py | yangyang | MAIN_DPS | HAVOC | NORMAL | 0 | aaaa, skill_coordination (DUAL_SKILL=True) |
+| yangyang.py | yangyang | MAIN_DPS | HAVOC | NORMAL | 0 | aaaa, c_a1, c_a12, w_e_c_a2, c_a3e, c_a34, c_e, c_z, y_a12, y_a34, y_z1, y_e, qr, y_z, main, skill_coordination (DUAL_SKILL=True) |
+| Linnai.py | Linnai | SUB_DPS | SPECTRO | NORMAL | 0 | skill_coordination |
+| Aemeath.py | Aemeath | SUB_DPS | FIRE | NORMAL | 0 | startup, mecha_e, a4_until_buff, loop, skill_coordination |
+| Mornye.py | Mornye | SUB_DPS | HAVOC | NORMAL | 0 | skill_coordination |
+| qingxiao.py | qingxiao | SUB_DPS | WIND | NORMAL | 0 | a, a12, a123, main, skill_coordination |
+| denia.py | denia | SUB_DPS | FIRE | NORMAL | 0 | er1, aafaa, eer2, qr, qrz, a123, z, eqr, r2, skill_coordination |
+| jianxin.py | jianxin | MAIN_DPS | — | NORMAL | 0 | skill_coordination |
+| xigelika.py | xigelika | MAIN_DPS | SPECTRO | NORMAL | 0 | main, skill_coordination |
+| verina.py | verina | SUB_DPS | SPECTRO | NORMAL | 0 | main, skill_coordination |
+| shorekeeper.py | shorekeeper | SUB_DPS | SPECTRO | NORMAL | 0 | qr, qrz, a123, z, eqr, skill_coordination |
+| qiuyuan.py | qiuyuan | SUB_DPS | WIND | NORMAL | 0 | e, start, main, skill_coordination |
+| jinxi.py | jinxi | MAIN_DPS | SPECTRO | NORMAL | 0 | main, skill_coordination (骨架, 待补充连招) |
+| rebecca.py | rebecca | MAIN_DPS | ELECTRIC | NORMAL | 0 | main, skill_coordination (骨架, 待补充连招) |
 
 ### 3.2 共享函数 (`src/character/__init__.py`)
 
@@ -89,7 +123,9 @@ e:\konghuiww\konghuiww\
 
 **注册表**: `ACTION_REGISTRY` → `{角色名: {动作名: {force_clear}}}` (已移除 fg_time/total_time)
 
-**角色库**: `CHARACTER_LIBRARY` → `{模块名: 模块}` (仅 4 个已注册)
+**角色库**: `CHARACTER_LIBRARY` → `{角色名: 模块}` (16 个已注册)
+
+**导入约定**: 所有角色文件统一使用 `from src.character import *` 导入共享函数, 新增共享函数无需逐个修改角色文件
 
 **核心函数**:
 - `register_action()` — 注册动作 (仅 force_clear 参数)
@@ -103,7 +139,8 @@ e:\konghuiww\konghuiww\
 - `continuous_send_key()` — 持续按指定按键指定时长 (continuous_click 的键盘版, 间隔同为 70ms)
 - `wait_for_my_turn()` — 阻塞等待唤醒 (threading.Event)
 - `freeze_time()` — 时停补偿 (延长所有倒计时)
-- `f_execute()` — 处决检测与执行 (屏幕中央区域找图, 见下方"处决检测"说明)
+- `f_execute()` — 处决检测与执行 (屏幕中央区域找图, 见下方"处决检测"说明); 返回 1=成功 (found 或 can_f 任一命中), 0=失败
+- `detect_self_on_field()` — 检测当前角色是否在场 (模板匹配角色头像)
 - `set_axis_command/result()` — 轴命令通信
 
 #### 二值化找色使用方法
@@ -162,27 +199,50 @@ if box and calculate_binary_percentage(task, box, 244) > 0.02:
 
 ## 4. 任务系统
 
-### 4.1 CharacterAutoTask (主战斗任务, 905行)
+### 4.1 任务架构 (拆分后)
 
-**配置**:
-- `启停热键`: 默认 F7, 带捕获按钮, 持久化保存
-- `战斗模式`: 自动 / 打轴 (下拉框, 打轴时显示轴编辑按钮)
-- `编辑角色`: 打开角色属性编辑器
-- `新建轴` / `编辑轴` / `导入轴`: 轴管理按钮
+原 `CharacterAutoTask` 已拆分为基类 + 3 个子任务:
 
-**架构**:
-- **热键系统**: Windows API `RegisterHotKey` + `PeekMessageW` 全局监听
-- **角色检测**: 模板匹配识别 3 个角色槽位, 预计算协奏值环数据
-- **协奏值检测**: OpenCV 环形掩膜 + 颜色过滤 + 连通域分析
-- **自动模式**: 并行启动角色脚本线程, 基于优先级调度切换 (当前仅 qianxiao 支持)
-- **打轴模式**: 按轴顺序发送命令, 事件驱动同步, FgTimeCollector 测量
-- **调度器**: 冷却过滤(1s) → 避免重复 → 优先级排序
+```
+MyBaseTask
+  └── CombatBaseTask (共享基类: 热键/角色检测/协奏检测/内存回收/run主循环)
+        ├── AxisCombatTask (打轴战斗, 默认 F7)
+        └── AutoCombatTask (自动战斗骨架, 默认 F8)
 
-**关键状态**:
-- `_char_data[1..3]`: switchable, skill_ready, attack_counts, states
-- `_char_events{1,2,3}`: threading.Event 唤醒/睡眠同步
-- `_axis_command/result/done_events`: 轴模式通信
-- `_run_stopped`: on_destroy 退出标志
+MyBaseTask
+  └── AxisEditorTask (轴编辑工具: 新建轴/编辑轴/编辑角色)
+```
+
+#### CombatBaseTask (共享基类)
+
+**功能**: 所有战斗模式共享的逻辑
+- 热键注册/监听/F7 启停 (`RegisterHotKey` + `PeekMessageW`)
+- 角色检测 + 协奏数据预计算 (`_precompute_con_data`)
+- 角色脚本线程管理 (`_start_script_threads` / `_cleanup_script_threads`)
+- 战斗状态重置 + 内存回收 (`_reset_combat_state` / `_trim_memory`)
+- 协奏值检测 (`is_con_full`: `forte_location` 区域找色 >= 99%)
+- 热重载 (`importlib.reload()` 角色脚本)
+- WGC 管理 (任务销毁时关闭)
+- 子类只需实现 `_execute_combat()` 方法
+
+#### AxisCombatTask (打轴战斗)
+
+**配置**: 启停热键 (默认 F7) + 导入轴
+**功能**: 按轴定义的顺序执行动作, 支持 startup/loop/loop2/loop3/finish 阶段
+- 轴命令/结果/完成事件机制
+- FgTimeCollector 实测前台时间
+- 角色匹配验证
+
+#### AutoCombatTask (自动战斗, 骨架)
+
+**配置**: 启停热键 (默认 F8)
+**功能**: 后续开发调度逻辑 (优先级/冷却/协奏调度)
+
+#### AxisEditorTask (轴编辑工具)
+
+**配置**: 新建轴 / 编辑轴 / 编辑角色 (三个按钮)
+**功能**: 一次性任务, 点击按钮打开对应编辑器, 不需要启停
+- 在 CombatTab 中用 `ConfigCard` 渲染 (无 Start/Stop 按钮)
 
 ### 4.2 其他任务
 
@@ -196,14 +256,27 @@ if box and calculate_binary_percentage(task, box, 244) > 0.02:
 
 ## 5. GUI 组件
 
-### 5.1 AxisEditor (轴编辑器)
+### 5.1 CombatTab (自定义战斗配置 Tab)
+
+- **位置**: `src/ui/CombatTab.py`, 通过 `custom_tabs` 注册
+- **功能**: 显示三个任务卡片:
+  - 打轴战斗 (`TaskCard`, 含 Start/Stop + 导入轴按钮)
+  - 自动战斗 (`TaskCard`, 含 Start/Stop 按钮)
+  - 轴编辑器 (`ConfigCard`, 只有新建轴/编辑轴/编辑角色按钮, 无 Start/Stop)
+- **自动展开**: `setExpand(True)` + `expandButton.hide()`, 无折叠按钮
+- **main 模式精简**: `Globals.on_show_main_window()` 在 `debug=False` 时移除所有默认 Tab, 隐藏导航侧边栏和标题栏图标, 只保留 CombatTab
+- **debug 模式**: 保留全部框架 GUI, 不触发精简
+
+### 5.2 AxisEditor (轴编辑器)
 
 - **数据结构**: `AxisAction{character_name, action_name}`, `Axis{startup, loop}`
 - **GUI**: 角色动作方块 (可拖拽) + 横向时间线 (启动/循环)
 - **头像系统**: 从 COCO 标注裁剪角色头像
 - **深色主题**: `BG_PRIMARY=#202020`, `BG_CARD=#2D2D2D`, `TEXT_PRIMARY=#FFFFFF`
+- **角色选择**: `QGridLayout` 网格布局, 每行 4 个角色卡片, 自动换行 (替代原 QHBoxLayout 单行排列)
+- **fg_time 显示**: 动作方块从 `fg_time_data.json` 读取实测数据 (通过 `FgTimeCollector.get_avg_fg_time()`), 显示两位小数 (如 `fg:1.23s`); 替代原从 `ACTION_REGISTRY` 读取 (已移除 fg_time 参数)
 
-### 5.2 CharacterEditor (角色属性编辑器)
+### 5.3 CharacterEditor (角色属性编辑器)
 
 - **可编辑属性**: CHAR_TYPE, SWITCH_PRIORITY, ELEMENT, RESONANCE_CHAIN
 - **保存方式**: 正则替换 .py 文件中的属性赋值行, 保留注释, `importlib.reload()` 刷新
@@ -238,9 +311,16 @@ if box and calculate_binary_percentage(task, box, 244) > 0.02:
 - 交互方式: Pynput / PostMessage / ForegroundPostMessage 等
 - OCR: onnxocr + OpenVINO, 自动繁转简
 - 模板匹配: 默认阈值 0.8
-- 分辨率: 16:9, 最小 1280x720, 自动缩放到 [2560x1440, 1920x1080, 1600x900, 1280x720]
+- 分辨率: 16:9, 最小 1280x720, 自动缩放到 [2560x1440, 1920x1080, 1600x900, 1280x900, 1280x720]
 - 截图处理: `make_bottom_right_black()` 遮挡 UID
 - 游戏热键: Echo=q, Liberation=r, Resonance=e, Tool=t
+- 自定义 Tab: `'custom_tabs': [["src.ui.CombatTab", "CombatTab"]]`
+- 应用名: `'my_app': ['src.globals', 'Globals']`
+
+**pyappify.yml**:
+- `name: "konghuiww"` (英文, 避免安装路径含中文导致 PyAppify 报错)
+- `uac: true`, `use_pythonw: true`
+- 更新源: `https://github.com/konghui111/konghuiww.git`
 
 ---
 
@@ -263,6 +343,9 @@ F7 停止 → _combat_active = False → 角色脚本退出 → _reset_combat_st
 ### 8.2 角色脚本标准结构
 
 ```python
+import time
+from src.character import *  # 统一导入所有共享函数和枚举
+
 CHARACTER_NAME = "xxx"
 CHAR_TYPE = CharType.MAIN_DPS
 SWITCH_PRIORITY = SwitchPriority.NORMAL
@@ -270,7 +353,7 @@ ELEMENT = Elements.ICE
 RESONANCE_CHAIN = 0
 
 def _action_xxx(task): ...  # 动作函数, 返回 True/False
-register_action(CHARACTER_NAME, "xxx")  # 注册
+register_action(CHARACTER_NAME, "xxx")  # 注册 (紧跟动作函数, 不集中放底部)
 
 def run(task):
     # 找到自己的槽位
@@ -282,6 +365,22 @@ def run(task):
             set_axis_result(task, CHARACTER_NAME, action_success)
         else:
             # 自动模式 (大部分角色暂不支持)
+```
+
+#### 标准技能释放模板
+
+释放技能时, 先等待可用再持续按键直到消失, **动作在 `if not` 判定之前**:
+
+```python
+while task.enabled and task._combat_active:  # 等待 e 可用
+    if check_skill_available(task, "e", skill_image="xxx_e"):
+        break
+    time.sleep(0.05)
+while task.enabled and task._combat_active:  # 持续按 e 直到 e 消失
+    task.send_key("e")              # ← 动作在前
+    time.sleep(0.05)
+    if not check_skill_available(task, "e", skill_image="xxx_e"):  # ← 判定在后
+        break
 ```
 
 ### 8.3 角色注册流程
@@ -523,3 +622,108 @@ def run(task):
 - `src/config.py`: 添加 `'custom_tabs': [["src.ui.CombatTab", "CombatTab"]]`
 **效果**: `main_debug.py` 保留全部框架 GUI 用于调试; `main.py` 只显示 CharacterAutoTask 的展开配置卡片, 无导航栏/图标/折叠
 **关键 API**: `TaskCard` 继承 `ConfigCard`, 自带 Start/Pause/Stop 按钮; `task.start()` 内部调用 `executor.start()` + `enable()`, 无需额外的全局启动按钮
+
+### 2026-08-28 新增 6 个角色 + 动作注册
+
+**新增角色**: xigelika(西格丽卡, MAIN_DPS, SPECTRO), verina(维里娜, SUB_DPS, SPECTRO), shorekeeper(守岸人, SUB_DPS, SPECTRO), qiuyuan(秋园, SUB_DPS, WIND), jinxi(今汐, MAIN_DPS, SPECTRO, 骨架), rebecca(雷贝卡, MAIN_DPS, ELECTRIC, 骨架)
+**同时注册**: 之前未注册的 Linnai, Aemeath, Mornye, qingxiao, denia, jianxin 也完成动作注册和 run() 派发
+**角色库**: 从 4 个扩展到 16 个
+
+### 2026-08-28 角色文件导入统一为 `import *`
+
+**决策**: 所有 17 个角色文件的 `from src.character import xxx, yyy, zzz` 统一替换为 `from src.character import *`
+**原因**: 每次在 `__init__.py` 新增共享函数都要逐个修改角色文件, 维护成本高
+**效果**: 新增共享函数后所有角色文件自动可用, 无需修改
+
+### 2026-08-28 轴文件独立目录
+
+**决策**: 轴 JSON 文件从 `src/character/` 移到 `src/axis/`
+**原因**: 角色脚本和轴数据混在一起不清晰
+**同步**: CharacterAutoTask 的导入轴/编辑轴和 AxisEditor 的保存轴对话框默认路径都改为 `src/axis/`
+
+### 2026-08-28 战斗重启加速 (去除 join 等待)
+
+**现象**: F7 停止后再按 F7 启动, 从按键到第一个技能释放延迟 1-3 秒
+**原因**: `_execute_auto_mode()` 中 `t.join(timeout=1)` 等待旧线程退出, 但旧线程卡在 `time.sleep(2)` 等长睡眠中, `event.set()` 无法中断 `time.sleep()`, 每个线程最多等 1 秒, 3 个线程最多 3 秒
+**修复**: 去掉 join, 直接清空 `_script_threads` 列表; daemon 线程在 `_combat_active=False` 后自行退出
+**效果**: F7 重启即时生效, 旧线程在空闲期间自行消亡
+
+### 2026-08-28 协奏值检测改为 forte_location 找色
+
+**决策**: `is_con_full()` 从环形掩膜+连通域分析改为 `forte_location` 区域找色, 颜色占比 >= 99% 认为能量已满
+**原因**: 环形掩膜方案需要校准 (`_con_full_size`), 闭运算面积和原始像素数量纲不一致, 边界漏判
+**新方案**: `_precompute_con_data()` 只预计算颜色边界 (`lower`/`upper`), `is_con_full()` 在 `forte_location` 区域按角色属性颜色过滤, 统计像素占比
+**保留**: 环形掩膜代码注释保留, suisui 特殊检查逻辑不变
+
+### 2026-08-28 WGC 管理策略
+
+**决策**: F7 停止战斗时不关闭 WGC, 任务销毁 (`on_destroy`) 时才关闭
+**原因**: WGC 重建涉及 D3D11 设备创建+帧池+捕获会话, 耗时 1-3 秒; 战斗间隙保持 WGC 活跃可实现快速重启
+**实现**: `_trim_memory()` 只清理 Python 工作集 (`EmptyWorkingSet`), 不调用 `method.close()`; `on_destroy()` 中单独调用 `method.close()` 释放 GPU 资源
+**权衡**: 战斗停止期间游戏内存不会下降, 但重启速度从 2-3 秒降到即时
+
+### 2026-08-28 角色脚本热重载
+
+**决策**: F7 启动战斗时 `importlib.reload()` 所有已识别角色的脚本模块
+**原因**: debug 模式下修改角色 .py 文件后需要重启整个程序才能生效, 效率低
+**实现**: `_execute_combat()` 在启动角色脚本前遍历 `_detected_characters`, 对每个模块调用 `importlib.reload()`
+**效果**: 修改角色脚本 → 按 F7 → 自动加载新代码, 无需重启; `register_action()` 重复调用安全 (字典覆盖)
+**性能**: 每个模块 reload < 1ms, 对启动速度无影响
+
+### 2026-08-28 f_execute 返回值修复
+
+**现象**: 飞雪处决成功后走了 "处决失败" 分支
+**原因**: `f_execute()` 的返回逻辑 `return 1 if found else 0` 只看 `found` (找图结果), 忽略了 `can_f` (二值化检测结果); 当 `can_f=True` 但 `found=False` 时, F 键已按但返回 0
+**修复**: 在 `if found or can_f:` 分支内直接 `return 1`, `else` 分支 `return 0`, 返回值与实际行为一致
+
+### 2026-08-28 AxisEditor fg_time 显示 + 角色选择网格布局
+
+**fg_time**: 动作方块从 `fg_time_data.json` 读取实测数据 (通过 `FgTimeCollector`), 显示两位小数; 替代原从 `ACTION_REGISTRY` 读取 (fg_time 参数已移除, 永远显示 0.0)
+**角色选择**: `CharacterSelectionDialog` 从 `QHBoxLayout` (单行) 改为 `QGridLayout` (每行 4 个, 自动换行), 解决角色增多后对话框过宽问题
+
+### 2026-08-28 PyAppify 打包配置
+
+**决策**: 配置 GitHub Actions 自动打包, `pyappify.yml` 应用名改为英文 `konghuiww`
+**原因**: 中文名导致安装路径含中文, PyAppify 启动器报错 "必须是英文目录"
+**CI/CD**: `.github/workflows/build.yml` 配置 push tag `v*` 触发构建, 添加 `permissions: contents: write`, `concurrency: cancel-in-progress: true` 自动取消旧构建
+**跳过测试**: 模板测试 (`TestMain.py`) 不适用, `if: false` 跳过
+
+### 2026-08-28 标准技能释放模板写入 codegen skill
+
+**决策**: 在 `ok-character-codegen/SKILL.md` 中新增"标准技能释放模板"章节
+**内容**: 两段式模式 (等待可用 → 持续按键直到消失), 关键规则: `if not` 退出条件时动作必须在判定之前
+**原因**: 多个角色文件出现 `if not` 在 `send_key` 前面的错误模式, 导致技能消失时少按一次
+
+### 2026-08-28 denia.py if-not 模式修复
+
+**现象**: denia 的多个技能释放循环中 `if not check_skill_available` 在 `send_key` 前面
+**影响**: 技能消失时循环直接 break, 最后一次按键被跳过
+**修复**: 4 处循环全部改为动作在前、判定在后的标准模式 (r1 消失、super_e2 消失、r2 消失、q 消失)
+
+### 2026-08-29 战斗任务拆分为基类 + 子任务
+
+**决策**: 将 `CharacterAutoTask` 拆分为 `CombatBaseTask` (共享基类) + `AxisCombatTask` (打轴) + `AutoCombatTask` (自动骨架) + `AxisEditorTask` (编辑工具)
+**原因**: 自动模式和打轴模式逻辑差异大, 混在一个类里难以维护; 编辑功能不应有启停按钮
+**架构**:
+- `CombatBaseTask`: 热键/角色检测/协奏检测/内存回收/run 主循环 (子类只需实现 `_execute_combat()`)
+- `AxisCombatTask`: 继承基类, 只保留导入轴按钮, 完整保留打轴逻辑
+- `AutoCombatTask`: 继承基类, 默认 F8 (与打轴 F7 不冲突), 骨架待开发
+- `AxisEditorTask`: 继承 `MyBaseTask`, 新建轴/编辑轴/编辑角色三个按钮, 无启停
+**CombatTab**: 打轴和自动用 `TaskCard` (含 Start/Stop), 编辑器用 `ConfigCard` (无 Start/Stop)
+
+### 2026-08-29 新增角色 Galbrena/Lupa (热熔) + jinxi/rebecca 动作
+
+**新增角色**: Galbrena (MAIN_DPS, FIRE), Lupa (MAIN_DPS, FIRE), 角色库扩至 18 个
+**jinxi 动作**: e2, r, e4 (先 e3 → 普攻直到 e4 出现 → 释放 e4)
+**rebecca 动作**: r, a12, a123, z (长按普攻直到 z 图标出现)
+
+### 2026-08-29 角色编辑器网格布局
+
+**问题**: CharacterEditor 角色选择区域用 QScrollArea + 固定高度 160px, 角色多了被挤出去看不到
+**修复**: 去掉 QScrollArea, 改用 QGridLayout 直接显示, 每行 6 个角色, 对话框尺寸增大到 800x650
+
+### 2026-08-29 角色文件导入统一为 `from src.character import *`
+
+**决策**: 所有 17 个角色文件的导入行统一为一行 `from src.character import *`
+**原因**: 之前每个角色文件有 3-5 行不同的 import, 新增共享函数时需要逐个修改; `import *` 后自动获取所有公开名称
+**注意**: `import *` 只导入不以 `_` 开头的名称, 不会导入其他角色模块 (它们在 `__init__.py` 底部才导入, 无循环依赖)

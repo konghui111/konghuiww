@@ -2,7 +2,7 @@ import os  # 导入操作系统模块
 import re  # 导入正则模块
 import importlib  # 导入动态导入模块
 
-from PySide6.QtWidgets import QDialog, QVBoxLayout, QHBoxLayout, QWidget, QLabel, QGridLayout, QScrollArea, QPushButton
+from PySide6.QtWidgets import QDialog, QVBoxLayout, QHBoxLayout, QWidget, QLabel, QGridLayout, QPushButton
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QPixmap
 from qfluentwidgets import FluentIcon, PushButton, ComboBox
@@ -63,7 +63,7 @@ class CharacterEditorDialog(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setWindowTitle("编辑角色")
-        self.resize(700, 550)
+        self.resize(800, 650)
         self._selected_char = None  # 当前选中的角色模块名
         self._char_buttons = {}  # 角色选择按钮 {模块名: QPushButton}
         self._combos = {}  # 属性下拉框 {属性key: ComboBox}
@@ -75,29 +75,25 @@ class CharacterEditorDialog(QDialog):
         main_layout.setSpacing(10)
         self.setStyleSheet(f"QDialog {{ background-color: {BG_PRIMARY}; color: {TEXT_PRIMARY}; }} QLabel {{ color: {TEXT_PRIMARY}; }}")
 
-        # ---- 角色选择区域 ----
+        # ---- 角色选择区域 (网格布局, 自动换行) ----
         main_layout.addWidget(QLabel("选择角色:"))
 
-        scroll = QScrollArea()
-        scroll.setWidgetResizable(True)
-        scroll.setMaximumHeight(160)
-        scroll.setStyleSheet(f"QScrollArea {{ border: none; }}")
-        scroll_widget = QWidget()
-        char_layout = QGridLayout(scroll_widget)
+        char_widget = QWidget()
+        char_layout = QGridLayout(char_widget)
         char_layout.setSpacing(8)
 
         col = 0
         row = 0
+        max_cols = 6  # 每行最多 6 个角色
         for name in CHARACTER_LIBRARY:
             card = self._create_char_card(name)
             char_layout.addWidget(card, row, col)
             col += 1
-            if col >= 5:
+            if col >= max_cols:
                 col = 0
                 row += 1
 
-        scroll.setWidget(scroll_widget)
-        main_layout.addWidget(scroll)
+        main_layout.addWidget(char_widget)
 
         # ---- 属性编辑区域 ----
         self._editor_title = QLabel("编辑属性:")

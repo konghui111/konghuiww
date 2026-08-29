@@ -59,6 +59,7 @@ loop:
 | "找e" / "找r" / "找技能" / "找e技能" / "等待技能" | `check_skill_available(task, "X")` — 严格纯白占比判 CD (图标亮起=可用) |
 | "识图等待X" / "找图等待X" | `while` 循环 + `check_skill_available(task, "X")` |
 | "识图等待X消失" / "找e直到消失" | `while` 循环 + `not check_skill_available(task, "X")` |
+| "释放技能X" / "放e" / "放r" (完整技能释放) | 标准技能释放模式: 先等待可用 → 再持续按键直到消失 (见下方模板) |
 | "识图X状态" / "识图X图标" (指定了具体图片) | `check_skill_available(task, "X", skill_image="Y")` — 二值化识图 |
 | "找色" / "找色检测X" | `check_skill_available_by_color(task, "X", color=PLACEHOLDER)` — 按色相找色检测 |
 | "找色等待X" / "颜色检测等待X" | `while` 循环 + `check_skill_available_by_color(task, "X", color=PLACEHOLDER)` |
@@ -68,6 +69,26 @@ loop:
 | "如果buff激活" / "检查X buff" | `if check_buff(task, slot, "X"):` |
 | "处决" / "F处决" | `f_execute(task, 时间)` |
 | "跳跃" / "空格" | `task.send_key("space")` |
+
+### 标准技能释放模板
+
+当描述为"释放某技能"或"放e/r/q"时, 生成以下标准模式 (动作在判定前, 确保最后一次按键不被跳过):
+
+```python
+# 步骤1: 等待技能可用
+while task.enabled and task._combat_active:  # 等待 e 可用
+    if check_skill_available(task, "e", skill_image="xxx_e"):
+        break
+    time.sleep(0.05)
+# 步骤2: 持续按键直到技能消失 (动作在前, 判定在后)
+while task.enabled and task._combat_active:  # 持续按 e 直到 e 消失
+    task.send_key("e")
+    time.sleep(0.05)
+    if not check_skill_available(task, "e", skill_image="xxx_e"):
+        break
+```
+
+**关键规则**: 当循环退出条件是 `if not` (技能消失) 时, 动作语句 (`send_key`) 必须放在 `if not` **之前**, 保证技能消失前的最后一次按键被执行。
 
 ### 检测方式选择 (重要)
 

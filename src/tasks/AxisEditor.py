@@ -178,10 +178,16 @@ class ActionBlockWidget(QWidget):  # 动作方块组件: 显示动作信息
         super().__init__(parent)
         self.character_name = character_name  # 角色名
         self.action_name = action_name  # 动作名
-        # 从 ACTION_REGISTRY 获取时间信息
-        action_info = ACTION_REGISTRY.get(character_name, {}).get(action_name, {})
-        self.fg_time = action_info.get("fg_time", 0)
-        self.total_time = action_info.get("total_time", 0)
+        # 从 fg_time_data.json 获取实测前台时间
+        self.fg_time = 0  # 默认值
+        try:
+            from src.character.fg_time_collector import FgTimeCollector
+            collector = FgTimeCollector()  # 加载 fg_time_data.json
+            avg = collector.get_avg_fg_time(character_name, action_name)
+            if avg is not None:
+                self.fg_time = avg
+        except Exception:
+            pass
         self._init_ui()  # 初始化界面
 
     def _init_ui(self):  # 初始化界面
@@ -220,7 +226,7 @@ class ActionBlockWidget(QWidget):  # 动作方块组件: 显示动作信息
         time_layout.setContentsMargins(0, 0, 0, 0)
         time_layout.setSpacing(0)
         fg_label = QLabel()
-        fg_label.setText(f"fg:{self.fg_time:.1f}s")
+        fg_label.setText(f"fg:{self.fg_time:.2f}s")
         fg_label.setStyleSheet(f"color: {TEXT_PRIMARY}; font-size: 12px;")
         time_layout.addWidget(fg_label)
         total_label = QLabel()

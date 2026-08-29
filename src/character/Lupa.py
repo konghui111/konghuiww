@@ -1,68 +1,10 @@
 import time  # 导入时间模块, 用 time.sleep 代替 task.sleep (子线程中 task.sleep 可能不安全)
 from src.character import *  # 导入所有共享工具函数和枚举
-CHARACTER_NAME = "jinxi"  # 角色名, 对应 COCO 标注中的 category 后缀
+CHARACTER_NAME = "Lupa"  # 角色名, 对应 COCO 标注中的 category 后缀
 CHAR_TYPE = CharType.MAIN_DPS  # 角色定位: 主输出
 SWITCH_PRIORITY = SwitchPriority.NORMAL  # 切换优先级: 普通
-ELEMENT = Elements.SPECTRO  # 角色属性: 衍射
+ELEMENT = Elements.FIRE  # 角色属性: 热熔
 RESONANCE_CHAIN = 0  # 共鸣链等级 (0-6)
-
-
-def _action_e2(task):
-    """释放 e2 技能: 等待 e 可用 → 持续按 e 直到 e 消失"""
-    while task.enabled and task._combat_active:  # 等待 e 可用
-        if check_skill_available(task, "e", skill_image="jinxi_e2"):
-            break
-        time.sleep(0.05)
-    while task.enabled and task._combat_active:  # 持续按 e 直到 e 消失
-        task.send_key("e")
-        time.sleep(0.05)
-        if not check_skill_available(task, "e", skill_image="jinxi_e2"):
-            break
-    return True
-register_action(CHARACTER_NAME, "e2")  # 注册动作 e2
-
-
-def _action_r(task):
-    """释放 r 技能: 等待 r 可用 → 持续按 r 直到 r 消失"""
-    while task.enabled and task._combat_active:  # 等待 r 可用
-        if check_skill_available(task, "r", skill_image="jinxi_r"):
-            break
-        time.sleep(0.05)
-    while task.enabled and task._combat_active:  # 持续按 r 直到 r 消失
-        task.send_key("r")
-        time.sleep(0.05)
-        if not check_skill_available(task, "r", skill_image="jinxi_r"):
-            break
-    return True
-register_action(CHARACTER_NAME, "r")  # 注册动作 r
-
-
-def _action_e4(task):
-    """释放 e4: 先释放 e3 → 普攻直到 e4 图标出现 → 释放 e4"""
-    # 步骤1: 释放 e3 (等待 e3 可用 → 按 e 直到 e3 消失)
-    while task.enabled and task._combat_active:  # 等待 e3 可用
-        if check_skill_available(task, "e", skill_image="jinxi_e3"):
-            break
-        time.sleep(0.05)
-    while task.enabled and task._combat_active:  # 持续按 e 直到 e3 消失
-        task.send_key("e")
-        time.sleep(0.05)
-        if not check_skill_available(task, "e", skill_image="jinxi_e3"):
-            break
-    # 步骤2: 普攻直到 e4 图标出现
-    while task.enabled and task._combat_active:  # 等待 e4 图标出现
-        if check_skill_available(task, "a", skill_image="jinxi_e4"):
-            break
-        task.click()
-        time.sleep(0.07)
-    # 步骤3: 释放 e4 (等待 e4 可用 → 按 e 直到 e4 消失)
-    while task.enabled and task._combat_active:  # 持续按 e 直到 e4 消失
-        task.send_key("e")
-        time.sleep(0.05)
-        if not check_skill_available(task, "e", skill_image="jinxi_e4"):
-            break
-    return True
-register_action(CHARACTER_NAME, "e4")  # 注册动作 e4
 
 
 def _check_special_skill(task):  # 检测协奏值是否已满 (特殊技能是否可以释放)
@@ -111,13 +53,7 @@ def run(task):  # 脚本入口函数, 由 CharacterAutoTask 在子线程中调�
         axis_action = get_axis_command(task, CHARACTER_NAME)  # 获取并清除轴命令
         if axis_action:  # 有轴命令
             task.log_info(f"{CHARACTER_NAME} 收到轴命令: {axis_action}")
-            if axis_action == "e2":  # e2 技能
-                action_success = _action_e2(task)
-            elif axis_action == "r":  # r 技能
-                action_success = _action_r(task)
-            elif axis_action == "e4":  # e4 (先 e3 → 普攻 → e4)
-                action_success = _action_e4(task)
-            elif axis_action == "skill_coordination":  # 变奏
+            if axis_action == "skill_coordination":  # 变奏
                 action_success = _action_skill_coordination(task)
             else:  # 未知动作
                 task.log_error(f"轴配置错误: {CHARACTER_NAME} 未知动作 {axis_action}")

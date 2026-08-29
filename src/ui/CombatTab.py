@@ -1,10 +1,11 @@
 from qfluentwidgets import FluentIcon
 from ok.gui.widget.CustomTab import CustomTab
 from ok.gui.tasks.TaskCard import TaskCard
+from ok.gui.tasks.ConfigCard import ConfigCard
 
 
 class CombatTab(CustomTab):
-    """自定义战斗配置 Tab, 仅展示 CharacterAutoTask 的任务卡片 (含 Start/Pause/Stop 按钮)"""
+    """自定义战斗配置 Tab, 展示战斗和编辑相关的任务卡片"""
 
     def __init__(self):
         super().__init__()
@@ -26,16 +27,45 @@ class CombatTab(CustomTab):
             self._build_ui()
 
     def _build_ui(self):
-        from src.tasks.CharacterAutoTask import CharacterAutoTask
-        task = self.get_task(CharacterAutoTask)  # 获取框架中的 CharacterAutoTask 实例
-        if task is None:
-            self.logger.warning("CombatTab: 未找到 CharacterAutoTask 实例")
-            return
+        from src.tasks.AxisCombatTask import AxisCombatTask
+        from src.tasks.AutoCombatTask import AutoCombatTask
+        from src.tasks.AxisEditorTask import AxisEditorTask
 
-        # 用 TaskCard 渲染 (含 Start/Pause/Stop 按钮 + 全部配置控件)
-        self._card = TaskCard(task=task, onetime=True)
-        self.add_widget(self._card)
+        # 打轴战斗卡片 (含 Start/Stop 按钮)
+        axis_task = self.get_task(AxisCombatTask)
+        if axis_task:
+            axis_card = TaskCard(task=axis_task, onetime=True)
+            self.add_widget(axis_card)
+            axis_card.setExpand(True)
+            axis_card.card.expandButton.hide()
+        else:
+            self.logger.warning("CombatTab: 未找到 AxisCombatTask")
 
-        # 自动展开卡片, 隐藏展开按钮
-        self._card.setExpand(True)
-        self._card.card.expandButton.hide()
+        # 自动战斗卡片 (含 Start/Stop 按钮)
+        auto_task = self.get_task(AutoCombatTask)
+        if auto_task:
+            auto_card = TaskCard(task=auto_task, onetime=True)
+            self.add_widget(auto_card)
+            auto_card.setExpand(True)
+            auto_card.card.expandButton.hide()
+        else:
+            self.logger.warning("CombatTab: 未找到 AutoCombatTask")
+
+        # 轴编辑器卡片 (只有配置按钮, 无 Start/Stop)
+        editor_task = self.get_task(AxisEditorTask)
+        if editor_task:
+            editor_card = ConfigCard(
+                task=editor_task,
+                name=editor_task.name,
+                config=editor_task.config,
+                description=editor_task.description,
+                default_config=editor_task.default_config,
+                config_description=editor_task.config_description,
+                config_type=editor_task.config_type,
+                config_icon=editor_task.icon or FluentIcon.EDIT,
+            )
+            self.add_widget(editor_card)
+            editor_card.setExpand(True)
+            editor_card.card.expandButton.hide()
+        else:
+            self.logger.warning("CombatTab: 未找到 AxisEditorTask")
