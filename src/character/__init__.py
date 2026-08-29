@@ -579,6 +579,8 @@ from src.character import xigelika
 from src.character import verina
 from src.character import shorekeeper
 from src.character import qiuyuan
+from src.character import jinxi
+from src.character import rebecca
 
 CHARACTER_LIBRARY = {  # 角色库: 角色名 → 脚本模块, 新增角色在此注册
     "qianxiao": qianxiao,  # 千晓
@@ -595,4 +597,6 @@ CHARACTER_LIBRARY = {  # 角色库: 角色名 → 脚本模块, 新增角色在�
     "verina": verina,
     "shorekeeper": shorekeeper,
     "qiuyuan": qiuyuan,
+    "jinxi": jinxi,
+    "rebecca": rebecca,
 }

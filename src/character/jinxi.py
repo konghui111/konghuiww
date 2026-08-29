@@ -1,67 +1,23 @@
-﻿import time  # 导入时间模块, 用 time.sleep 代替 task.sleep (子线程中 task.sleep 可能不安全)
+import time  # 导入时间模块, 用 time.sleep 代替 task.sleep (子线程中 task.sleep 可能不安全)
 from src.character import *  # 导入所有共享工具函数和枚举
-CHARACTER_NAME = "shorekeeper"  # 角色名, 对应 COCO 标注中的 category 后缀
-CHAR_TYPE = CharType.SUB_DPS  # 角色定位: 主输出
+CHARACTER_NAME = "jinxi"  # 角色名, 对应 COCO 标注中的 category 后缀
+CHAR_TYPE = CharType.MAIN_DPS  # 角色定位: 主输出
 SWITCH_PRIORITY = SwitchPriority.NORMAL  # 切换优先级: 普通
-ELEMENT = Elements.SPECTRO  # 角色属性: 衍射 (对应协奏值环颜色索引 0)
+ELEMENT = Elements.SPECTRO  # 角色属性: 衍射
 RESONANCE_CHAIN = 0  # 共鸣链等级 (0-6)
 
 
-def _action_qr(task):
-    while task.enabled and task._combat_active:
-        if check_skill_available(task, "r",skill_image="shorekeeper_r"):
-            break
-        task.click()
-        time.sleep(0.05)
-    while task.enabled and task._combat_active:
-        if not check_skill_available(task, "r",skill_image="shorekeeper_r"):
-            break
-        task.send_key("q")
-        task.send_key("r")
-        time.sleep(0.05)
-    time.sleep(2)
-    return True
-register_action(CHARACTER_NAME, "qr")  # 注册动作 qr
-
-def _action_qrz(task):
-    _action_qr(task)
-    task.mouse_down()
-    return True
-register_action(CHARACTER_NAME, "qrz")  # 注册动作 qrz
-
-def _action_a123(task):
+def _action_main(task):
+    # TODO: 实现今汐的主连招
     continuous_click(task, 1)
     return True
-register_action(CHARACTER_NAME, "a123")  # 注册动作 a123
+register_action(CHARACTER_NAME, "main")  # 注册动作 main
 
-def _action_z(task):
-    task.mouse_down()
-    time.sleep(0.8)
-    task.mouse_up()
-    return True
-register_action(CHARACTER_NAME, "z")  # 注册动作 z
-
-def _action_eqr(task):
-    while task.enabled and task._combat_active:
-        if check_skill_available(task, "e",skill_image="shorekeeper_e"):
-            break
-        time.sleep(0.05)
-    while task.enabled and task._combat_active:
-        if not check_skill_available(task, "e",skill_image="shorekeeper_e"):
-            break
-        task.send_key("e")
-        time.sleep(0.05)
-    _action_qr(task)
-    return True
-register_action(CHARACTER_NAME, "eqr")  # 注册动作 eqr
 
 def _check_special_skill(task):  # 检测协奏值是否已满 (特殊技能是否可以释放)
-    """
-    通过 task.is_con_full() 检测当前角色的协奏值是否已满。
-    协奏值满 (get_current_con == 1) 对应特殊技能就绪。
-    """
+    """通过 task.is_con_full() 检测当前角色的协奏值是否已满。"""
     hotkey = None  # 当前角色槽位
-    for slot, name in task._detected_characters.items():  # 查找自己的槽位
+    for slot, name in task._detected_characters.items():  # 遍历已识别角色
         if name == CHARACTER_NAME:  # 找到自己的槽位
             hotkey = slot  # 记录槽位编号
             break
@@ -71,13 +27,11 @@ def _check_special_skill(task):  # 检测协奏值是否已满 (特殊技能是�
 
 
 def _action_skill_coordination(task):  # 特殊技能-变奏: 新登场角色触发的变奏动作
-    """
-    被特殊技能强制切换上场后执行的变奏动作。
-    触发时清空残留的 end_time, 打断上个动作 (强制置为已完成)。
-    """
-    continuous_click(task, 0.8)
+    """被特殊技能强制切换上场后执行的变奏动作。"""
+    continuous_click(task, 0.80)
     return True
 register_action(CHARACTER_NAME, "skill_coordination", force_clear=True)  # 注册变奏动作
+
 
 def run(task):  # 脚本入口函数, 由 CharacterAutoTask 在子线程中调用
     global SWITCH_PRIORITY  # 声明修改模块级变量
@@ -106,16 +60,8 @@ def run(task):  # 脚本入口函数, 由 CharacterAutoTask 在子线程中调�
         axis_action = get_axis_command(task, CHARACTER_NAME)  # 获取并清除轴命令
         if axis_action:  # 有轴命令
             task.log_info(f"{CHARACTER_NAME} 收到轴命令: {axis_action}")
-            if axis_action == "qr":  # q+r 连招
-                action_success = _action_qr(task)
-            elif axis_action == "qrz":  # q+r+z 连招
-                action_success = _action_qrz(task)
-            elif axis_action == "a123":  # 普攻连招
-                action_success = _action_a123(task)
-            elif axis_action == "z":  # 重击
-                action_success = _action_z(task)
-            elif axis_action == "eqr":  # e+q+r 连招
-                action_success = _action_eqr(task)
+            if axis_action == "main":  # 主连招
+                action_success = _action_main(task)
             elif axis_action == "skill_coordination":  # 变奏
                 action_success = _action_skill_coordination(task)
             else:  # 未知动作
@@ -136,5 +82,4 @@ def run(task):  # 脚本入口函数, 由 CharacterAutoTask 在子线程中调�
                 else:  # 特殊技能未就绪
                     task.schedule_next_character()  # 普通切换
 
-    
     task.log_info(f"{CHARACTER_NAME} 战斗脚本已停止")  # 输出停止日志

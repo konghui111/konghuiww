@@ -1,8 +1,5 @@
-import time  # 导入时间模块, 用 time.sleep 代替 task.sleep (子线程中 task.sleep 可能不安全)
-from src.character import get_location_box, wait_for_my_turn, continuous_click, register_action, CharType, SwitchPriority, Elements  # 导入共享工具函数和枚举
-from src.character import get_axis_command, set_axis_result  # 导入轴命令机制函数
-from src.character import freeze_time, find_sub_dps_slot, check_skill_available, check_buff,get_my_slot
-from src.character import check_skill_available_by_color,detect_self_on_field,f_execute
+﻿import time  # 导入时间模块, 用 time.sleep 代替 task.sleep (子线程中 task.sleep 可能不安全)
+from src.character import *  # 导入所有共享工具函数和枚举
 CHARACTER_NAME = "qiuyuan"  # 角色名, 对应 COCO 标注中的 category 后缀
 CHAR_TYPE = CharType.SUB_DPS  # 角色定位: 主输出
 SWITCH_PRIORITY = SwitchPriority.NORMAL  # 切换优先级: 普通

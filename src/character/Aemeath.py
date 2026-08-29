@@ -1,8 +1,5 @@
-import time  # 导入时间模块, 用 time.sleep 代替 task.sleep (子线程中 task.sleep 可能不安全)
-from src.character import get_location_box, wait_for_my_turn, continuous_click,continuous_send_key, register_action, CharType, SwitchPriority, Elements  # 导入共享工具函数和枚举
-from src.character import get_axis_command, set_axis_result  # 导入轴命令机制函数
-from src.character import check_skill_available, f_execute  # 导入技能检测、处决函数
-from src.character import calculate_binary_percentage,check_skill_available_by_size,check_skill_available_binary  # 导入二值化找色函数
+﻿import time  # 导入时间模块, 用 time.sleep 代替 task.sleep (子线程中 task.sleep 可能不安全)
+from src.character import *  # 导入所有共享工具函数和枚举
 
 CHARACTER_NAME = "Aemeath"  # 角色名, 对应 COCO 标注中的 category 后缀
 CHAR_TYPE = CharType.SUB_DPS  # 角色定位: 副输出
