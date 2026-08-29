@@ -19,6 +19,9 @@ def _action_e2(task):
         time.sleep(0.05)
         if not check_skill_available(task, "e", skill_image="jinxi_e2"):
             break
+    time.sleep(0.2)    
+    f_execute(task, 1.6)    
+    task.send_key("r")    
     return True
 register_action(CHARACTER_NAME, "e2")  # 注册动作 e2
 
@@ -40,7 +43,7 @@ register_action(CHARACTER_NAME, "r")  # 注册动作 r
 
 def _action_ae3(task):
     # 步骤1: 释放 e3 (等待 e3 可用 → 按 e 直到 e3 消失)
-    continuous_click(task, 0.6)
+    continuous_click(task, 0.8)
     while task.enabled and task._combat_active:  # 等待 e3 可用
         if check_skill_available(task, "e", skill_image="jinxi_e3"):
             break
@@ -50,15 +53,19 @@ def _action_ae3(task):
         time.sleep(0.05)
         if not check_skill_available(task, "e", skill_image="jinxi_e3"):
             break
+    # task.send_key("f")  
+    f_execute(task, 1.6)  
+    task.send_key("r")    
     return True
 register_action(CHARACTER_NAME, "ae3")  # 注册动作 ae3
 
 def _action_e4(task):
     # 步骤2: 普攻直到 e4 图标出现
     while task.enabled and task._combat_active:  # 等待 e4 图标出现
-        if check_skill_available(task, "a", skill_image="jinxi_e4"):
+        if check_skill_available(task, "e", skill_image="jinxi_e4"):
             break
         task.click()
+        task.send_key("f")
         time.sleep(0.07)
     task.send_key("q")    
     # 步骤3: 释放 e4 (等待 e4 可用 → 按 e 直到 e4 消失)
@@ -67,6 +74,13 @@ def _action_e4(task):
         time.sleep(0.05)
         if not check_skill_available(task, "e", skill_image="jinxi_e4"):
             break
+    while task.enabled and task._combat_active:  
+        if detect_self_on_field(task, CHARACTER_NAME):
+            break
+        time.sleep(0.05)        
+    f_execute(task, 1.6)    
+    task.send_key("r")    
+    # continuous_send_key(task,"e", 2)
     return True
 register_action(CHARACTER_NAME, "e4")  # 注册动作 e4
 

@@ -1747,6 +1747,19 @@
             ],
             "area": 1860,
             "iscrowd": 0
+        },
+        {
+            "id": 109,
+            "image_id": 61,
+            "category_id": 109,
+            "bbox": [
+                1762,
+                1262,
+                38,
+                36
+            ],
+            "area": 1368,
+            "iscrowd": 0
         }
     ],
     "categories": [
@@ -2288,6 +2301,11 @@
         {
             "id": 108,
             "name": "rebecca_z",
+            "supercategory": ""
+        },
+        {
+            "id": 109,
+            "name": "rebecca_is_norml",
             "supercategory": ""
         }
     ]

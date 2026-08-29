@@ -43,24 +43,27 @@ def _action_r(task):
 register_action(CHARACTER_NAME, "r")  # 注册动作 r
 
 
-def _action_a12e(task):
-    continuous_click(task, 0.9)
-    task.send_key("e")
+def _action_super_a(task):
+    if check_skill_available(task, "sa", skill_image="rebecca_is_norml"):
+        task.send_key("e")
+    continuous_click(task, 1.2)
     return True
-register_action(CHARACTER_NAME, "a12e")  # 注册动作 a12
+register_action(CHARACTER_NAME, "super_a")  # 注册动作 super_a
 
 
-def _action_a12(task):
-    continuous_click(task, 0.9)
+def _action_norm_a(task):
+    if not check_skill_available(task, "sa", skill_image="rebecca_is_norml"):
+        task.send_key("e")
+    continuous_click(task, 1.2)
     return True
-register_action(CHARACTER_NAME, "a12")  # 注册动作 a123
+register_action(CHARACTER_NAME, "norm_a")  # 注册动作 norm_a
 
 
 def _action_z(task):
     """z: 长按普攻直到 z 图标出现"""
     task.mouse_down()  # 按住鼠标左键
     while task.enabled and task._combat_active:  # 等待 z 图标出现
-        if check_skill_available(task, "a", skill_image="rebecca_z"):
+        if check_skill_available(task, "sa", skill_image="rebecca_z"):
             break
         time.sleep(0.05)
     task.mouse_up()  # 松开鼠标左键
@@ -120,10 +123,10 @@ def run(task):  # 脚本入口函数, 由 CharacterAutoTask 在子线程中调�
                 action_success = _action_e(task)
             elif axis_action == "r":  # r 技能
                 action_success = _action_r(task)
-            elif axis_action == "a12e":  # 普攻 a12
-                action_success = _action_a12e(task)
-            elif axis_action == "a12":  # 普攻 a123
-                action_success = _action_a12(task)
+            elif axis_action == "super_a":  # 强化普攻
+                action_success = _action_super_a(task)
+            elif axis_action == "norm_a":  # 普通普攻
+                action_success = _action_norm_a(task)
             elif axis_action == "z":  # 长按普攻直到 z 出现
                 action_success = _action_z(task)
             elif axis_action == "skill_coordination":  # 变奏
