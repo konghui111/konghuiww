@@ -562,27 +562,22 @@ def send_a_num_by_con(task, slot, num):  # 通过协奏值变化次数控制攻�
         time.sleep(0.01)  # 每次点击间隔 10ms
 
 
-# ==== 角色库 (必须在所有函数定义之后导入, 避免循环导入) ====
-# 新增角色时: 1. 在 src/character/ 下创建脚本文件  2. 在此处 import 并注册
+# ==== 角色库 (按属性分文件夹导入) ====
+# 新增角色时: 1. 在对应属性文件夹下创建脚本文件  2. 在此处 import 并注册
 # 脚本文件必须有 CHARACTER_NAME 常量和 run(task) 函数
-from src.character import qianxiao  # 导入千晓角色脚本模块
-from src.character import yangyang  
-from src.character import suisui  
-from src.character import feixue  
-from src.character import Linnai
-from src.character import Aemeath
-from src.character import Mornye
-from src.character import qingxiao
-from src.character import denia
-from src.character import jianxin
-from src.character import xigelika
-from src.character import verina
-from src.character import shorekeeper
-from src.character import qiuyuan
-from src.character import jinxi
-from src.character import rebecca
-from src.character import Galbrena
-from src.character import Lupa
+
+# 衍射 (SPECTRO)
+from src.character.spectro import jinxi, Linnai, shorekeeper, verina
+# 导电 (ELECTRIC)
+from src.character.electric import rebecca
+# 热熔 (FIRE)
+from src.character.fire import Aemeath, Mornye, denia, Galbrena, Lupa
+# 冰属性 (ICE)
+from src.character.ice import feixue, suisui
+# 气动 (WIND)
+from src.character.wind import qingxiao, jianxin, xigelika, qiuyuan
+# 湮灭 (HAVOC)
+from src.character.havoc import qianxiao, yangyang
 
 CHARACTER_LIBRARY = {  # 角色库: 角色名 → 脚本模块, 新增角色在此注册
     "qianxiao": qianxiao,  # 千晓

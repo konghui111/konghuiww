@@ -75,23 +75,40 @@ class CharacterEditorDialog(QDialog):
         main_layout.setSpacing(10)
         self.setStyleSheet(f"QDialog {{ background-color: {BG_PRIMARY}; color: {TEXT_PRIMARY}; }} QLabel {{ color: {TEXT_PRIMARY}; }}")
 
-        # ---- 角色选择区域 (网格布局, 自动换行) ----
+        # ---- 角色选择区域 (按属性分行) ----
         main_layout.addWidget(QLabel("选择角色:"))
+
+        # 属性名称映射
+        ELEMENT_NAMES = {0: "衍射", 1: "导电", 2: "热熔", 3: "冰属性", 4: "气动", 5: "湮灭"}
+
+        # 按属性分组角色
+        groups = {}
+        for name in CHARACTER_LIBRARY:
+            module = CHARACTER_LIBRARY[name]
+            elem = int(getattr(module, "ELEMENT", 0))
+            if elem not in groups:
+                groups[elem] = []
+            groups[elem].append(name)
 
         char_widget = QWidget()
         char_layout = QGridLayout(char_widget)
         char_layout.setSpacing(8)
 
-        col = 0
         row = 0
-        max_cols = 6  # 每行最多 6 个角色
-        for name in CHARACTER_LIBRARY:
-            card = self._create_char_card(name)
-            char_layout.addWidget(card, row, col)
-            col += 1
-            if col >= max_cols:
-                col = 0
-                row += 1
+        for elem_idx in sorted(groups.keys()):
+            # 属性标签行
+            elem_label = QLabel(ELEMENT_NAMES.get(elem_idx, f"属性{elem_idx}"))
+            elem_label.setStyleSheet(f"color: {TEXT_PRIMARY}; font-weight: bold; font-size: 13px;")
+            char_layout.addWidget(elem_label, row, 0, 1, 6)  # 跨所有列
+            row += 1
+
+            # 角色卡片行
+            col = 0
+            for name in groups[elem_idx]:
+                card = self._create_char_card(name)
+                char_layout.addWidget(card, row, col)
+                col += 1
+            row += 1
 
         main_layout.addWidget(char_widget)
 

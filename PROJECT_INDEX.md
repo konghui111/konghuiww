@@ -45,25 +45,15 @@ e:\konghuiww\konghuiww\
 ├── src/
 │   ├── config.py              # 应用配置 (窗口捕获, OCR, 热键, 任务注册)
 │   ├── globals.py             # Globals 类: on_show_main_window 钩子精简 GUI
-│   ├── character/             # 角色战斗脚本 + 共享工具
-│   │   ├── __init__.py        # 枚举, 注册表, 共享函数, 角色库 (16 角色)
+│   ├── character/             # 角色战斗脚本 + 共享工具 (按属性分文件夹)
+│   │   ├── __init__.py        # 枚举, 注册表, 共享函数, 角色库 (18 角色)
 │   │   ├── fg_time_collector.py  # fg_time 自动收集器
-│   │   ├── feixue.py          # 飞雪 (MAIN_DPS, ICE)
-│   │   ├── qianxiao.py        # 千晓 (SUB_DPS, HAVOC)
-│   │   ├── suisui.py          # 穗穗 (HEALER, ICE)
-│   │   ├── yangyang.py        # 秧秧 (MAIN_DPS, HAVOC, DUAL_SKILL)
-│   │   ├── Linnai.py          # 林奈 (SUB_DPS, SPECTRO)
-│   │   ├── Aemeath.py         # 爱梅斯 (SUB_DPS, FIRE)
-│   │   ├── Mornye.py          # 莫尔涅 (SUB_DPS, HAVOC)
-│   │   ├── qingxiao.py        # 清晓 (SUB_DPS, WIND)
-│   │   ├── denia.py           # 丹妮亚 (SUB_DPS, FIRE)
-│   │   ├── jianxin.py         # 鉴心 (MAIN_DPS)
-│   │   ├── xigelika.py        # 西格丽卡 (MAIN_DPS, SPECTRO)
-│   │   ├── verina.py          # 维里娜 (SUB_DPS, SPECTRO)
-│   │   ├── shorekeeper.py     # 守岸人 (SUB_DPS, SPECTRO)
-│   │   ├── qiuyuan.py         # 秋园 (SUB_DPS, WIND)
-│   │   ├── jinxi.py           # 今汐 (MAIN_DPS, SPECTRO, 骨架)
-│   │   ├── rebecca.py         # 雷贝卡 (MAIN_DPS, ELECTRIC, 骨架)
+│   │   ├── spectro/           # 衍射 (4): jinxi, Linnai, shorekeeper, verina
+│   │   ├── electric/          # 导电 (1): rebecca
+│   │   ├── fire/              # 热熔 (5): Aemeath, Mornye, denia, Galbrena, Lupa
+│   │   ├── ice/               # 冰属性 (2): feixue, suisui
+│   │   ├── wind/              # 气动 (4): qingxiao, jianxin, xigelika, qiuyuan
+│   │   ├── havoc/             # 湮灭 (2): qianxiao, yangyang
 │   │   └── character.py       # 模板角色 (未注册)
 │   ├── axis/                  # 轴 JSON 文件 (从 src/character/ 独立出来)
 │   │   └── *.json             # 各队伍轴配置
@@ -727,3 +717,16 @@ while task.enabled and task._combat_active:  # 持续按 e 直到 e 消失
 **决策**: 所有 17 个角色文件的导入行统一为一行 `from src.character import *`
 **原因**: 之前每个角色文件有 3-5 行不同的 import, 新增共享函数时需要逐个修改; `import *` 后自动获取所有公开名称
 **注意**: `import *` 只导入不以 `_` 开头的名称, 不会导入其他角色模块 (它们在 `__init__.py` 底部才导入, 无循环依赖)
+
+### 2026-08-29 角色文件按属性分文件夹
+
+**决策**: 将角色脚本从 `src/character/` 平铺改为按属性分 6 个子文件夹
+**结构**:
+- `spectro/` 衍射 (4): jinxi, Linnai, shorekeeper, verina
+- `electric/` 导电 (1): rebecca
+- `fire/` 热熔 (5): Aemeath, Mornye, denia, Galbrena, Lupa
+- `ice/` 冰属性 (2): feixue, suisui
+- `wind/` 气动 (4): qingxiao, jianxin, xigelika, qiuyuan
+- `havoc/` 湮灭 (2): qianxiao, yangyang
+**导入兼容**: 每个子文件夹有 `__init__.py` 导出角色模块, 主 `__init__.py` 从子包导入, 外部代码 `from src.character import CHARACTER_LIBRARY` 不受影响
+**UI 同步**: 轴编辑器和角色编辑器的角色选择界面改为按属性分行显示, 每行一个属性标签 + 该属性角色卡片

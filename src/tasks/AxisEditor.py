@@ -579,46 +579,69 @@ class CharacterSelectionDialog(QDialog):  # 角色选择对话框
 
         layout.addWidget(QLabel("选择最多3个角色:"))
 
-        # 角色选择区域 (网格排列, 自动换行)
-        char_layout = QGridLayout()  # 网格布局, 角色多时自动换行
-        char_layout.setSpacing(12)  # 卡片间距
-        self.char_labels = {}  # 角色选择标签字典
-        col = 0  # 当前列号
-        max_cols = 8  # 每行最多显示 4 个角色
-        for name in CHARACTER_LIBRARY:  # 遍历角色库
-            # 创建角色卡片 (头像 + 选择框)
-            card_widget = QWidget()
-            card_layout = QVBoxLayout(card_widget)
-            card_layout.setContentsMargins(8, 8, 8, 8)
-            card_layout.setAlignment(Qt.AlignCenter)
-            # 头像
-            avatar_label = QLabel()
-            pixmap = create_avatar_pixmap(name, size=60)
-            if not pixmap.isNull():
-                avatar_label.setPixmap(pixmap)
-            else:
-                avatar_label.setText("?")
-                avatar_label.setStyleSheet(f"background-color: {BG_CARD}; border-radius: 8px; font-size: 24px;")
-                avatar_label.setFixedSize(60, 60)
-                avatar_label.setAlignment(Qt.AlignCenter)
-            card_layout.addWidget(avatar_label, alignment=Qt.AlignCenter)
-            # 角色选择 (使用 QLabel 显示黑色对号)
-            select_label = QLabel("✓" if name in self.selected_characters else "")
-            select_label.setFixedSize(24, 24)
-            select_label.setAlignment(Qt.AlignCenter)
-            select_label.setStyleSheet("font-size: 18px; font-weight: bold; color: black; background-color: white; border: 1px solid #999; border-radius: 4px;")
-            select_label.mousePressEvent = lambda event, n=name, lbl=select_label: self._toggle_character(n, lbl)
-            card_layout.addWidget(select_label, alignment=Qt.AlignCenter)
-            # 名称标签
-            name_label = QLabel(name)
-            name_label.setAlignment(Qt.AlignCenter)
-            card_layout.addWidget(name_label, alignment=Qt.AlignCenter)
-            self.char_labels[name] = select_label  # 存储标签
-            # 卡片样式
-            card_widget.setStyleSheet(f"background-color: {BG_CARD}; border: 1px solid {BORDER_COLOR}; border-radius: 8px;")
-            card_widget.setFixedWidth(120)
-            char_layout.addWidget(card_widget, col // max_cols, col % max_cols)  # 按网格位置添加
-            col += 1  # 列号递增
+        # 属性名称映射
+        ELEMENT_NAMES = {0: "衍射", 1: "导电", 2: "热熔", 3: "冰属性", 4: "气动", 5: "湮灭"}
+
+        # 按属性分组角色
+        groups = {}  # {属性索引: [角色名列表]}
+        for name in CHARACTER_LIBRARY:
+            module = CHARACTER_LIBRARY[name]
+            elem = int(getattr(module, "ELEMENT", 0))
+            if elem not in groups:
+                groups[elem] = []
+            groups[elem].append(name)
+
+        # 角色选择区域 (按属性分行)
+        char_layout = QGridLayout()
+        char_layout.setSpacing(8)
+        self.char_labels = {}
+        row = 0
+
+        for elem_idx in sorted(groups.keys()):  # 按属性索引排序
+            # 属性标签行
+            elem_label = QLabel(ELEMENT_NAMES.get(elem_idx, f"属性{elem_idx}"))
+            elem_label.setStyleSheet(f"color: {TEXT_PRIMARY}; font-weight: bold; font-size: 13px;")
+            char_layout.addWidget(elem_label, row, 0, 1, 8)  # 跨所有列
+            row += 1
+
+            # 角色卡片行
+            col = 0
+            for name in groups[elem_idx]:
+                # 创建角色卡片 (头像 + 选择框)
+                card_widget = QWidget()
+                card_layout = QVBoxLayout(card_widget)
+                card_layout.setContentsMargins(8, 8, 8, 8)
+                card_layout.setAlignment(Qt.AlignCenter)
+                # 头像
+                avatar_label = QLabel()
+                pixmap = create_avatar_pixmap(name, size=50)
+                if not pixmap.isNull():
+                    avatar_label.setPixmap(pixmap)
+                else:
+                    avatar_label.setText("?")
+                    avatar_label.setStyleSheet(f"background-color: {BG_CARD}; border-radius: 8px; font-size: 20px;")
+                    avatar_label.setFixedSize(50, 50)
+                    avatar_label.setAlignment(Qt.AlignCenter)
+                card_layout.addWidget(avatar_label, alignment=Qt.AlignCenter)
+                # 角色选择 (使用 QLabel 显示黑色对号)
+                select_label = QLabel("✓" if name in self.selected_characters else "")
+                select_label.setFixedSize(24, 24)
+                select_label.setAlignment(Qt.AlignCenter)
+                select_label.setStyleSheet("font-size: 18px; font-weight: bold; color: black; background-color: white; border: 1px solid #999; border-radius: 4px;")
+                select_label.mousePressEvent = lambda event, n=name, lbl=select_label: self._toggle_character(n, lbl)
+                card_layout.addWidget(select_label, alignment=Qt.AlignCenter)
+                # 名称标签
+                name_label = QLabel(name)
+                name_label.setAlignment(Qt.AlignCenter)
+                card_layout.addWidget(name_label, alignment=Qt.AlignCenter)
+                # 存储标签 + 卡片样式 + 添加到布局
+                self.char_labels[name] = select_label
+                card_widget.setStyleSheet(f"background-color: {BG_CARD}; border: 1px solid {BORDER_COLOR}; border-radius: 8px;")
+                card_widget.setFixedWidth(120)
+                char_layout.addWidget(card_widget, row, col)
+                col += 1
+            row += 1  # 下一属性换行
+
         layout.addLayout(char_layout)
 
         # 按钮区域
