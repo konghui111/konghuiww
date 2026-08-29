@@ -51,6 +51,7 @@ loop:
 | "松开e" / "释放e" | `task.send_key_up("e")` |
 | "按住左键" / "按住鼠标" | `task.mouse_down()` |
 | "松开左键" / "松开鼠标" | `task.mouse_up()` |
+| "重击" / "长按左键X秒" / "蓄力X秒" | `task.mouse_down()` + `time.sleep(X)` + `task.mouse_up()` — 长按左键一段时间后释放 |
 | "a" / "aa" / "aaa" / "普攻" | 循环点击鼠标左键, 根据描述决定退出条件 (见下方规则) |
 | "持续点击X秒" / "普攻X秒" | `continuous_click(task, X)` — 固定时长, 无退出条件 |
 | "点击一下" / "单击" | `task.click()` |

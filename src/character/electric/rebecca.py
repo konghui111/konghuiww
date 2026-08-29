@@ -18,6 +18,7 @@ def _action_e(task):
         time.sleep(0.05)
         if not check_skill_available(task, "e", skill_image="rebecca_e"):
             break
+    # task.send_key("f")    
     # task.send_key("e")    
     return True
 register_action(CHARACTER_NAME, "e")  # 注册动作 e
@@ -27,12 +28,14 @@ def _action_r(task):
     while task.enabled and task._combat_active:  # 等待 r 可用
         if check_skill_available(task, "r", skill_image="rebecca_r"):
             break
+        task.click()
         time.sleep(0.05)
     while task.enabled and task._combat_active:  # 持续按 r 直到 r 消失
         task.send_key("r")
-        time.sleep(0.05)
+        time.sleep(0.1)
         if not check_skill_available(task, "r", skill_image="rebecca_r"):
             break
+    task.send_key("r")    
     task.mouse_down() 
     while task.enabled and task._combat_active:  
         if detect_self_on_field(task, CHARACTER_NAME):
@@ -44,31 +47,59 @@ register_action(CHARACTER_NAME, "r")  # 注册动作 r
 
 
 def _action_super_a(task):
+    
+        # continuous_click(task, 0.5)
+    continuous_click(task, 1.2)
+    # task.send_key("f")
+    # f_execute(task, 1.6)
     if check_skill_available(task, "sa", skill_image="rebecca_is_norml"):
         task.send_key("e")
-    continuous_click(task, 1.2)
     return True
 register_action(CHARACTER_NAME, "super_a")  # 注册动作 super_a
 
 
 def _action_norm_a(task):
+    # if not check_skill_available(task, "sa", skill_image="rebecca_is_norml"):
+    #     task.send_key("e")
+        # continuous_click(task, 0.5)
+    continuous_click(task, 1.2)
+    # task.send_key("f")
+    # f_execute(task, 1.6)
     if not check_skill_available(task, "sa", skill_image="rebecca_is_norml"):
         task.send_key("e")
-    continuous_click(task, 1.2)
     return True
 register_action(CHARACTER_NAME, "norm_a")  # 注册动作 norm_a
 
 
 def _action_z(task):
     """z: 长按普攻直到 z 图标出现"""
+    if not check_skill_available(task, "sa", skill_image="rebecca_is_norml"):
+        task.send_key("e")
+        continuous_click(task, 0.5) 
+    # time.sleep(0.1)       
     task.mouse_down()  # 按住鼠标左键
     while task.enabled and task._combat_active:  # 等待 z 图标出现
         if check_skill_available(task, "sa", skill_image="rebecca_z"):
             break
-        time.sleep(0.05)
-    task.mouse_up()  # 松开鼠标左键
-    time.sleep(0.02)
-    task.click()
+        # task.click()
+        time.sleep(0.07)
+    # task.mouse_up()  # 松开鼠标左键
+    # while task.enabled and task._combat_active:  # 等待 z 图标出现
+    #     # task.click()
+    #     time.sleep(0.1)
+    #     if not check_skill_available(task, "sa", skill_image="rebecca_z"):
+    #         break
+    time.sleep(0.2)    
+    task.mouse_up()    
+    # time.sleep(0.02)
+    # task.click()
+    task.send_key("q")
+    # time.sleep(0.02)
+    while task.enabled and task._combat_active:
+        if _check_special_skill(task):
+            break
+        task.click()
+        time.sleep(0.05)    
     return True
 register_action(CHARACTER_NAME, "z")  # 注册动作 z
 
@@ -87,7 +118,9 @@ def _check_special_skill(task):  # 检测协奏值是否已满 (特殊技能是�
 
 def _action_skill_coordination(task):  # 特殊技能-变奏: 新登场角色触发的变奏动作
     """被特殊技能强制切换上场后执行的变奏动作。"""
-    continuous_click(task, 0.80)
+    continuous_click(task, 0.9)
+    task.send_key("f")
+    # f_execute(task, 1.6)
     return True
 register_action(CHARACTER_NAME, "skill_coordination", force_clear=True)  # 注册变奏动作
 
