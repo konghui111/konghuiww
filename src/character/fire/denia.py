@@ -6,8 +6,7 @@ SWITCH_PRIORITY = SwitchPriority.NORMAL  # 切换优先级: 普通
 ELEMENT = Elements.FIRE  # 角色属性: 衍射 (对应协奏值环颜色索引 0)
 RESONANCE_CHAIN = 0  # 共鸣链等级 (0-6)
 
-
-def _action_er1(task):
+def _action_e(task):
     while task.enabled and task._combat_active:  # 等待 e 可用
         if check_skill_available(task, "e",skill_image="denia_e"):
             break
@@ -17,7 +16,10 @@ def _action_er1(task):
         time.sleep(0.05)
         if not check_skill_available(task, "e",skill_image="denia_e"):
             break
-    time.sleep(0.1)
+    return True
+register_action(CHARACTER_NAME, "e")  # 注册动作 e
+
+def _action_r1(task):
     while task.enabled and task._combat_active:
         if check_skill_available(task, "r",skill_image="denia_r1"):
             break
@@ -27,20 +29,32 @@ def _action_er1(task):
         time.sleep(0.05)
         if not check_skill_available(task, "r",skill_image="denia_r1"):
             break
-    time.sleep(2)    
+    time.sleep(2)
     while task.enabled and task._combat_active:
         if check_skill_available(task, "e",skill_image="denia_super_e1"):
             break
-        time.sleep(0.05)  
-    time.sleep(0.4)      
+        time.sleep(0.05)
+    time.sleep(0.4)
+    return True
+register_action(CHARACTER_NAME, "r1")  # 注册动作 r1
+
+def _action_er1(task):
+    _action_e(task)
+    time.sleep(0.1)
+    _action_r1(task)  
     return True
 register_action(CHARACTER_NAME, "er1")  # 注册动作 er1
 
 def _action_aa(task):
-    #不能处决就闪避
     continuous_click(task, 0.6)
     return True
-register_action(CHARACTER_NAME, "aa")  # 注册动作 aafaa
+register_action(CHARACTER_NAME, "aa")  # 
+
+def _action_a34(task):
+    #不能处决就闪避
+    continuous_click(task, 1)
+    return True
+register_action(CHARACTER_NAME, "a34")  # 注册动作 a34
 
 def _action_aafaa(task):
     #不能处决就闪避
@@ -152,15 +166,21 @@ def run(task):  # 脚本入口函数, 由 CharacterAutoTask 在子线程中调�
         axis_action = get_axis_command(task, CHARACTER_NAME)  # 获取并清除轴命令
         if axis_action:  # 有轴命令
             task.log_info(f"{CHARACTER_NAME} 收到轴命令: {axis_action}")
-            if axis_action == "er1":  # e+r1 连招
+            if axis_action == "e":  # e 技能
+                action_success = _action_e(task)
+            elif axis_action == "r1":  # r1 技能
+                action_success = _action_r1(task)
+            elif axis_action == "er1":  # e+r1 连招
                 action_success = _action_er1(task)
             elif axis_action == "aa":  # 普攻
                 action_success = _action_aa(task)
+            elif axis_action == "a34":  # 普攻 a34
+                action_success = _action_a34(task)
             elif axis_action == "aafaa":  # 普攻+处决+普攻
                 action_success = _action_aafaa(task)
             elif axis_action == "ee":  # ee+r2 连招
                 action_success = _action_ee(task)
-            elif axis_action == "r2":  # ee+r2 连招
+            elif axis_action == "r2":  # r2 连招
                 action_success = _action_r2(task)
             elif axis_action == "skill_coordination":  # 变奏
                 action_success = _action_skill_coordination(task)
