@@ -12,6 +12,7 @@ def _action_e2(task):
     while task.enabled and task._combat_active:  # 等待 e 可用
         if check_skill_available(task, "e", skill_image="jinxi_e2"):
             break
+        # task.click()
         time.sleep(0.05)
     while task.enabled and task._combat_active:  # 持续按 e 直到 e 消失
         task.send_key("e")
@@ -37,9 +38,9 @@ def _action_r(task):
 register_action(CHARACTER_NAME, "r")  # 注册动作 r
 
 
-def _action_e4(task):
-    """释放 e4: 先释放 e3 → 普攻直到 e4 图标出现 → 释放 e4"""
+def _action_ae3(task):
     # 步骤1: 释放 e3 (等待 e3 可用 → 按 e 直到 e3 消失)
+    continuous_click(task, 0.6)
     while task.enabled and task._combat_active:  # 等待 e3 可用
         if check_skill_available(task, "e", skill_image="jinxi_e3"):
             break
@@ -49,12 +50,17 @@ def _action_e4(task):
         time.sleep(0.05)
         if not check_skill_available(task, "e", skill_image="jinxi_e3"):
             break
+    return True
+register_action(CHARACTER_NAME, "ae3")  # 注册动作 ae3
+
+def _action_e4(task):
     # 步骤2: 普攻直到 e4 图标出现
     while task.enabled and task._combat_active:  # 等待 e4 图标出现
         if check_skill_available(task, "a", skill_image="jinxi_e4"):
             break
         task.click()
         time.sleep(0.07)
+    task.send_key("q")    
     # 步骤3: 释放 e4 (等待 e4 可用 → 按 e 直到 e4 消失)
     while task.enabled and task._combat_active:  # 持续按 e 直到 e4 消失
         task.send_key("e")
@@ -79,7 +85,8 @@ def _check_special_skill(task):  # 检测协奏值是否已满 (特殊技能是�
 
 def _action_skill_coordination(task):  # 特殊技能-变奏: 新登场角色触发的变奏动作
     """被特殊技能强制切换上场后执行的变奏动作。"""
-    continuous_click(task, 0.80)
+    # continuous_click(task, 0.6)
+    time.sleep(0.6)
     return True
 register_action(CHARACTER_NAME, "skill_coordination", force_clear=True)  # 注册变奏动作
 
@@ -113,6 +120,8 @@ def run(task):  # 脚本入口函数, 由 CharacterAutoTask 在子线程中调�
             task.log_info(f"{CHARACTER_NAME} 收到轴命令: {axis_action}")
             if axis_action == "e2":  # e2 技能
                 action_success = _action_e2(task)
+            elif axis_action == "ae3":  # ae3 (普攻 → e3)
+                action_success = _action_ae3(task)
             elif axis_action == "r":  # r 技能
                 action_success = _action_r(task)
             elif axis_action == "e4":  # e4 (先 e3 → 普攻 → e4)
@@ -127,9 +136,8 @@ def run(task):  # 脚本入口函数, 由 CharacterAutoTask 在子线程中调�
             task.log_info(f"{CHARACTER_NAME} 暂不支持自动模式")
             time.sleep(0.1)
 
-        if action_success:  # 动作成功执行
-            # 自动模式下: 检测特殊技能并切换角色 (打轴模式由 task 控制切换, 不执行此逻辑)
-            if task.config.get("战斗模式", "自动") != "打轴":
+            if action_success:  # 动作成功执行 (仅自动模式)
+                # 检测特殊技能并切换角色
                 if _check_special_skill(task):  # 识图判断特殊技能是否就绪
                     task._char_data[slot]['skill_ready'] = True  # 标记自己的特殊技能就绪
                     task.log_info(f"{CHARACTER_NAME} 特殊技能就绪, 强制切换")

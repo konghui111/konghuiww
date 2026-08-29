@@ -7,6 +7,21 @@ ELEMENT = Elements.ELECTRIC  # 角色属性: 导电
 RESONANCE_CHAIN = 0  # 共鸣链等级 (0-6)
 
 
+def _action_e(task):
+    """释放 r 技能: 等待 r 可用 → 持续按 r 直到 r 消失"""
+    while task.enabled and task._combat_active:  # 等待 r 可用
+        if check_skill_available(task, "e", skill_image="rebecca_e"):
+            break
+        time.sleep(0.05)
+    while task.enabled and task._combat_active:  # 持续按 r 直到 r 消失
+        task.send_key("e")
+        time.sleep(0.05)
+        if not check_skill_available(task, "e", skill_image="rebecca_e"):
+            break
+    # task.send_key("e")    
+    return True
+register_action(CHARACTER_NAME, "e")  # 注册动作 e
+
 def _action_r(task):
     """释放 r 技能: 等待 r 可用 → 持续按 r 直到 r 消失"""
     while task.enabled and task._combat_active:  # 等待 r 可用
@@ -18,38 +33,27 @@ def _action_r(task):
         time.sleep(0.05)
         if not check_skill_available(task, "r", skill_image="rebecca_r"):
             break
+    task.mouse_down() 
+    while task.enabled and task._combat_active:  
+        if detect_self_on_field(task, CHARACTER_NAME):
+            break
+        time.sleep(0.05)   
+    task.mouse_up()        
     return True
 register_action(CHARACTER_NAME, "r")  # 注册动作 r
 
 
+def _action_a12e(task):
+    continuous_click(task, 0.9)
+    task.send_key("e")
+    return True
+register_action(CHARACTER_NAME, "a12e")  # 注册动作 a12
+
+
 def _action_a12(task):
-    """普攻 a12: 等待 a 可用 → 持续按 a 直到 a 消失"""
-    while task.enabled and task._combat_active:  # 等待 a 可用
-        if check_skill_available(task, "a", skill_image="rebecca_a"):
-            break
-        time.sleep(0.05)
-    while task.enabled and task._combat_active:  # 持续按 a 直到 a 消失
-        task.click()
-        time.sleep(0.05)
-        if not check_skill_available(task, "a", skill_image="rebecca_a"):
-            break
+    continuous_click(task, 0.9)
     return True
-register_action(CHARACTER_NAME, "a12")  # 注册动作 a12
-
-
-def _action_a123(task):
-    """普攻 a123: 等待 a 可用 → 持续按 a 直到 a 消失 (比 a12 更长)"""
-    while task.enabled and task._combat_active:  # 等待 a 可用
-        if check_skill_available(task, "a", skill_image="rebecca_a123"):
-            break
-        time.sleep(0.05)
-    while task.enabled and task._combat_active:  # 持续按 a 直到 a 消失
-        task.click()
-        time.sleep(0.05)
-        if not check_skill_available(task, "a", skill_image="rebecca_a123"):
-            break
-    return True
-register_action(CHARACTER_NAME, "a123")  # 注册动作 a123
+register_action(CHARACTER_NAME, "a12")  # 注册动作 a123
 
 
 def _action_z(task):
@@ -60,6 +64,8 @@ def _action_z(task):
             break
         time.sleep(0.05)
     task.mouse_up()  # 松开鼠标左键
+    time.sleep(0.02)
+    task.click()
     return True
 register_action(CHARACTER_NAME, "z")  # 注册动作 z
 
@@ -110,12 +116,14 @@ def run(task):  # 脚本入口函数, 由 CharacterAutoTask 在子线程中调�
         axis_action = get_axis_command(task, CHARACTER_NAME)  # 获取并清除轴命令
         if axis_action:  # 有轴命令
             task.log_info(f"{CHARACTER_NAME} 收到轴命令: {axis_action}")
-            if axis_action == "r":  # r 技能
+            if axis_action == "e":  # e 技能
+                action_success = _action_e(task)
+            elif axis_action == "r":  # r 技能
                 action_success = _action_r(task)
-            elif axis_action == "a12":  # 普攻 a12
+            elif axis_action == "a12e":  # 普攻 a12
+                action_success = _action_a12e(task)
+            elif axis_action == "a12":  # 普攻 a123
                 action_success = _action_a12(task)
-            elif axis_action == "a123":  # 普攻 a123
-                action_success = _action_a123(task)
             elif axis_action == "z":  # 长按普攻直到 z 出现
                 action_success = _action_z(task)
             elif axis_action == "skill_coordination":  # 变奏
@@ -128,9 +136,8 @@ def run(task):  # 脚本入口函数, 由 CharacterAutoTask 在子线程中调�
             task.log_info(f"{CHARACTER_NAME} 暂不支持自动模式")
             time.sleep(0.1)
 
-        if action_success:  # 动作成功执行
-            # 自动模式下: 检测特殊技能并切换角色 (打轴模式由 task 控制切换, 不执行此逻辑)
-            if task.config.get("战斗模式", "自动") != "打轴":
+            if action_success:  # 动作成功执行 (仅自动模式)
+                # 检测特殊技能并切换角色
                 if _check_special_skill(task):  # 识图判断特殊技能是否就绪
                     task._char_data[slot]['skill_ready'] = True  # 标记自己的特殊技能就绪
                     task.log_info(f"{CHARACTER_NAME} 特殊技能就绪, 强制切换")

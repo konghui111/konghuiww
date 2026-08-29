@@ -174,9 +174,8 @@ def run(task):  # 脚本入口函数, 由 CharacterAutoTask 在子线程中调�
             task.log_info(f"{CHARACTER_NAME} 暂不支持自动模式")
             time.sleep(0.1)
 
-        if action_success:  # 动作成功执行
-            # 自动模式下: 检测特殊技能并切换角色 (打轴模式由 task 控制切换, 不执行此逻辑)
-            if task.config.get("战斗模式", "自动") != "打轴":
+            if action_success:  # 动作成功执行 (仅自动模式)
+                # 检测特殊技能并切换角色
                 if _check_special_skill(task):  # 识图判断特殊技能是否就绪
                     task._char_data[slot]['skill_ready'] = True  # 标记自己的特殊技能就绪
                     task.log_info(f"{CHARACTER_NAME} 特殊技能就绪, 强制切换")

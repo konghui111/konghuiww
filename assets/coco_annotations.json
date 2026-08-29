@@ -311,6 +311,36 @@
             "file_name": "images/19.png",
             "width": 2560,
             "height": 1440
+        },
+        {
+            "id": 58,
+            "file_name": "images/20.png",
+            "width": 2560,
+            "height": 1440
+        },
+        {
+            "id": 59,
+            "file_name": "images/21.png",
+            "width": 2560,
+            "height": 1440
+        },
+        {
+            "id": 60,
+            "file_name": "images/22.png",
+            "width": 2560,
+            "height": 1440
+        },
+        {
+            "id": 61,
+            "file_name": "images/23.png",
+            "width": 2560,
+            "height": 1440
+        },
+        {
+            "id": 62,
+            "file_name": "images/4.png",
+            "width": 2560,
+            "height": 1440
         }
     ],
     "annotations": [
@@ -1600,6 +1630,123 @@
             ],
             "area": 2500,
             "iscrowd": 0
+        },
+        {
+            "id": 100,
+            "image_id": 58,
+            "category_id": 100,
+            "bbox": [
+                2365,
+                312,
+                50,
+                50
+            ],
+            "area": 2500,
+            "iscrowd": 0
+        },
+        {
+            "id": 101,
+            "image_id": 58,
+            "category_id": 101,
+            "bbox": [
+                2368,
+                483,
+                50,
+                50
+            ],
+            "area": 2500,
+            "iscrowd": 0
+        },
+        {
+            "id": 102,
+            "image_id": 58,
+            "category_id": 102,
+            "bbox": [
+                2400,
+                1255,
+                44,
+                30
+            ],
+            "area": 1320,
+            "iscrowd": 0
+        },
+        {
+            "id": 103,
+            "image_id": 58,
+            "category_id": 103,
+            "bbox": [
+                2151,
+                1277,
+                35,
+                38
+            ],
+            "area": 1330,
+            "iscrowd": 0
+        },
+        {
+            "id": 104,
+            "image_id": 59,
+            "category_id": 104,
+            "bbox": [
+                2144,
+                1254,
+                40,
+                39
+            ],
+            "area": 1560,
+            "iscrowd": 0
+        },
+        {
+            "id": 105,
+            "image_id": 60,
+            "category_id": 105,
+            "bbox": [
+                2146,
+                1267,
+                46,
+                43
+            ],
+            "area": 1978,
+            "iscrowd": 0
+        },
+        {
+            "id": 106,
+            "image_id": 61,
+            "category_id": 106,
+            "bbox": [
+                2396,
+                1274,
+                30,
+                44
+            ],
+            "area": 1320,
+            "iscrowd": 0
+        },
+        {
+            "id": 107,
+            "image_id": 61,
+            "category_id": 107,
+            "bbox": [
+                2142,
+                1262,
+                51,
+                53
+            ],
+            "area": 2703,
+            "iscrowd": 0
+        },
+        {
+            "id": 108,
+            "image_id": 62,
+            "category_id": 108,
+            "bbox": [
+                1750,
+                1273,
+                60,
+                31
+            ],
+            "area": 1860,
+            "iscrowd": 0
         }
     ],
     "categories": [
@@ -2096,6 +2243,51 @@
         {
             "id": 99,
             "name": "character_qiuyuan",
+            "supercategory": ""
+        },
+        {
+            "id": 100,
+            "name": "character_jinxi",
+            "supercategory": ""
+        },
+        {
+            "id": 101,
+            "name": "character_rebecca",
+            "supercategory": ""
+        },
+        {
+            "id": 102,
+            "name": "jinxi_r",
+            "supercategory": ""
+        },
+        {
+            "id": 103,
+            "name": "jinxi_e2",
+            "supercategory": ""
+        },
+        {
+            "id": 104,
+            "name": "jinxi_e3",
+            "supercategory": ""
+        },
+        {
+            "id": 105,
+            "name": "jinxi_e4",
+            "supercategory": ""
+        },
+        {
+            "id": 106,
+            "name": "rebecca_r",
+            "supercategory": ""
+        },
+        {
+            "id": 107,
+            "name": "rebecca_e",
+            "supercategory": ""
+        },
+        {
+            "id": 108,
+            "name": "rebecca_z",
             "supercategory": ""
         }
     ]

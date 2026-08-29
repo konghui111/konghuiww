@@ -1,0 +1,73 @@
+{
+  "startup": [
+    {
+      "character": "rebecca",
+      "action": "e"
+    }
+  ],
+  "loop": [
+    {
+      "character": "rebecca",
+      "action": "r"
+    },
+    {
+      "character": "verina",
+      "action": "main"
+    },
+    {
+      "character": "jinxi",
+      "action": "skill_coordination"
+    },
+    {
+      "character": "jinxi",
+      "action": "e2"
+    },
+    {
+      "character": "rebecca",
+      "action": "a12"
+    },
+    {
+      "character": "jinxi",
+      "action": "ae3"
+    },
+    {
+      "character": "rebecca",
+      "action": "a12e"
+    },
+    {
+      "character": "jinxi",
+      "action": "e4"
+    },
+    {
+      "character": "rebecca",
+      "action": "skill_coordination"
+    },
+    {
+      "character": "rebecca",
+      "action": "z"
+    },
+    {
+      "character": "jinxi",
+      "action": "skill_coordination"
+    },
+    {
+      "character": "jinxi",
+      "action": "e2"
+    },
+    {
+      "character": "jinxi",
+      "action": "ae3"
+    },
+    {
+      "character": "jinxi",
+      "action": "e4"
+    },
+    {
+      "character": "rebecca",
+      "action": "skill_coordination"
+    }
+  ],
+  "loop2": [],
+  "loop3": [],
+  "finish": []
+}

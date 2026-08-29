@@ -180,6 +180,7 @@ class ActionBlockWidget(QWidget):  # 动作方块组件: 显示动作信息
         self.action_name = action_name  # 动作名
         # 从 fg_time_data.json 获取实测前台时间
         self.fg_time = 0  # 默认值
+        self.total_time = 0  # 总时间 (暂未使用)
         try:
             from src.character.fg_time_collector import FgTimeCollector
             collector = FgTimeCollector()  # 加载 fg_time_data.json

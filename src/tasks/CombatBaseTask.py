@@ -280,6 +280,10 @@ class CombatBaseTask(MyBaseTask):
         except Exception as e:
             self.log_error(f"槽位{slot} 角色脚本出错: {e}")
 
+    def schedule_next_character(self, force=False):
+        """角色调度 (基类空实现, 打轴模式不需要; 自动模式子类重写)"""
+        pass
+
     def _prepare_combat(self):
         """战斗前的准备工作: 识别角色 + 热重载脚本, 返回是否准备好"""
         if not self._detected_characters:

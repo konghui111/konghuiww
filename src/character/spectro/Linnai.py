@@ -202,8 +202,7 @@ def run(task):
             task.log_info(f"{CHARACTER_NAME} 暂不支持自动模式")
             time.sleep(0.1)
 
-        if action_success:
-            if task.config.get("战斗模式", "自动") != "打轴":
+            if action_success:
                 if _check_special_skill(task):
                     task._char_data[slot]['skill_ready'] = True
                     task.log_info(f"{CHARACTER_NAME} 特殊技能就绪, 强制切换")
