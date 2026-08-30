@@ -128,16 +128,21 @@ def _action_qr(task):
     freeze_time(task, 4.7)
     # 步骤7: 等待 4 秒
     time.sleep(4.6)
-    while task.enabled and task._combat_active:
-        if check_skill_available(task, "a",skill_image="yangyang_c_a"): 
-            break
+    while task.enabled and task._combat_active: 
+        if detect_self_on_field(task, CHARACTER_NAME):
+            break  
         time.sleep(0.05)
     return True
 register_action(CHARACTER_NAME, "qr")  # 注册动作 qr
 
 def _action_y_z(task):
     task.mouse_down()
-    time.sleep(8.5)
+    time.sleep(2)
+    while task.enabled and task._combat_active: 
+        if not check_skill_available_by_color(task, "yangyang_yu",color={'r': (252, 255), 'g': (252, 255), 'b': (252, 255)},color_threshold=0.99): 
+            break 
+        time.sleep(0.05)
+    time.sleep(3.8)
     task.mouse_up()
     return True
 register_action(CHARACTER_NAME, "y_z")  # 注册动作 y_z

@@ -568,8 +568,10 @@ def freeze_time(task, duration):  # 时停: 将所有倒计时延长 (游戏内�
     """
     for slot in task._pending_resets:  # 遍历攻击计数重置倒计时
         task._pending_resets[slot] += duration  # 延长截止时间
-    for slot in task._switch_cooldowns:  # 遍历切换冷却时间
-        task._switch_cooldowns[slot] += duration  # 延长截止时间
+    # _switch_cooldowns 仅在自动模式下存在, 打轴模式没有
+    if hasattr(task, '_switch_cooldowns'):
+        for slot in task._switch_cooldowns:  # 遍历切换冷却时间
+            task._switch_cooldowns[slot] += duration  # 延长截止时间
     for slot in task._char_data:  # 遍历所有角色槽位
         states = task._char_data[slot].get('states', {})  # 获取自定义状态
         for key in states:  # 遍历状态键

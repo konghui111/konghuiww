@@ -74,7 +74,7 @@ def _helper_r2_finish(task):
             # task.send_key("r")
             break 
         # time.sleep(0.01)   
-    pause(task,action_name="Aemeath_zr2", trigger_counts=[3],sleep_duration=0.7)    
+    # pause(task,action_name="Aemeath_zr2", trigger_counts=[3],sleep_duration=0.7)    
     continuous_send_key(task,"r", 2)
     
     # while task.enabled and task._combat_active:  # 等待 r2 出现
@@ -208,7 +208,7 @@ def _action_loop(task):
         if not detect_self_on_field(task, CHARACTER_NAME):
             break  
         time.sleep(0.01) 
-    pause(task,action_name="Aemeath_loop_e", trigger_counts=[1],sleep_duration=0.2)    
+    # pause(task,action_name="Aemeath_loop_e", trigger_counts=[1],sleep_duration=0.2)    
     _helper_super_e_cycle(task)  # 公共: super_e 循环
     _helper_r2_finish(task)  # 公共: r2 收尾
     return True

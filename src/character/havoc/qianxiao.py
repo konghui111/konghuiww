@@ -169,10 +169,6 @@ def run(task):  # 脚本入口函数, 由 CharacterAutoTask 在子线程中调�
         return  # 退出脚本
     task.info_set("按键", hotkey)  # 在任务信息面板显示检测到的按键
 
-    # 打轴模式下跳过战斗模板, 由 task 控制流程
-    if task.config.get("战斗模式", "自动") != "打轴":
-        combat_template(task)  # 自动模式: 先执行一次战斗模板流程
-
     slot = int(hotkey)  # 槽位编号 (int), 用于访问 _char_data
 
     while task.enabled and task._combat_active:  # 任务启用且战斗激活时才循环
