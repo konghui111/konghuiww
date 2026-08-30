@@ -14,7 +14,7 @@ def _action_e(task):
     """
     e 技能: 找技能e → 点击e → 等待e消失
     """
-    continuous_click(task, 0.2)
+    # continuous_click(task, 0.2)
     while task.enabled and task._combat_active:  # 等待 e 可用
         if check_skill_available(task, "e"):
             break
@@ -43,13 +43,13 @@ def _action_r(task):
     # task.send_key_down("r")
     task.log_info(f"{CHARACTER_NAME} 等待r就绪")
     while task.enabled and task._combat_active: 
-        if check_skill_available(task, "r"):
+        if check_skill_available(task, "r", skill_image="Linnai_r"):
             break
-        time.sleep(0.07)
+        time.sleep(0.01)
     while task.enabled and task._combat_active:  # 循环点击直到 r 消失
         task.send_key("r")
         time.sleep(0.05)
-        if not check_skill_available(task, "q"):
+        if not detect_self_on_field(task, CHARACTER_NAME):
             # task.send_key_up("r")
             break
     task.log_info(f"{CHARACTER_NAME} r释放完毕")    
@@ -70,6 +70,7 @@ def _action_jump_a(task):
     while task.enabled and task._combat_active:  #
         if check_skill_available(task, "Linnai_120", skill_image="Linnai_120_location"):
             break
+        time.sleep(0.01)
     #等待重击命中    
     time.sleep(0.5)
     while task.enabled and task._combat_active:  # 
@@ -84,8 +85,8 @@ def _action_jump_a(task):
             break
         task.send_key("space")
         task.click()
-        time.sleep(0.05)
-    time.sleep(0.1)    
+        time.sleep(0.01)
+    time.sleep(0.02)    
     return True
 register_action(CHARACTER_NAME, "jump_a")  # 注册跳a动作
 
@@ -102,9 +103,20 @@ def _action_zr_jump_a(task):
     while task.enabled and task._combat_active:  #
         if check_skill_available(task, "Linnai_120", skill_image="Linnai_120_location"):
             break
+        time.sleep(0.01)
     time.sleep(0.5)
     # task.send_key("q")
-    task.send_key("r")  # 按 r 键
+    while task.enabled and task._combat_active: 
+        if check_skill_available(task, "r", skill_image="Linnai_r"):
+            break
+        # task.send_key("space")
+        time.sleep(0.01)
+    while task.enabled and task._combat_active:  # 循环点击直到 r 消失
+        task.send_key("r")
+        time.sleep(0.05)
+        if not detect_self_on_field(task, CHARACTER_NAME):
+            # task.send_key_up("r")
+            break
     task.mouse_up()
     time.sleep(1)
     # while task.enabled and task._combat_active:
@@ -116,21 +128,22 @@ def _action_zr_jump_a(task):
             break
         task.send_key("space")  # 按空格键
         time.sleep(0.1)  # 点击间隔
-    while task.enabled and task._combat_active:
-        if check_skill_available(task,"e", skill_image="Linnai_super_a"):  # super_a 可用
-            break
-        time.sleep(0.05)  # 点击间隔          
-    while task.enabled and task._combat_active:
-        task.click()
-        time.sleep(0.1)  # 点击间隔 
-        if not check_skill_available(task,"e", skill_image="Linnai_super_a"):  # super_a 已不可用
-            break
-    time.sleep(0.05)
+    # while task.enabled and task._combat_active:
+    #     if check_skill_available(task,"e", skill_image="Linnai_super_a"):  # super_a 可用
+    #         break
+    #     time.sleep(0.05)  # 点击间隔          
+    # while task.enabled and task._combat_active:
+    #     task.click()
+    #     time.sleep(0.1)  # 点击间隔 
+    #     if not check_skill_available(task,"e", skill_image="Linnai_super_a"):  # super_a 已不可用
+    #         break
+    # time.sleep(0.05)
     while task.enabled and task._combat_active:
         if _check_special_skill(task):
             break
         task.click()
-        time.sleep(0.05)
+        time.sleep(0.02)
+    time.sleep(0.02)    
     return True
 register_action(CHARACTER_NAME, "zr_jump_a")  # 注册 zr跳跳跳a 动作
 

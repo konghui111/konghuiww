@@ -1,0 +1,161 @@
+{
+  "startup": [
+    {
+      "character": "Galbrena",
+      "action": "z12"
+    },
+    {
+      "character": "Galbrena",
+      "action": "q"
+    },
+    {
+      "character": "Lupa",
+      "action": "ra"
+    },
+    {
+      "character": "denia",
+      "action": "er1"
+    },
+    {
+      "character": "denia",
+      "action": "aa"
+    },
+    {
+      "character": "Lupa",
+      "action": "aaa"
+    },
+    {
+      "character": "denia",
+      "action": "a34"
+    },
+    {
+      "character": "Lupa",
+      "action": "a"
+    },
+    {
+      "character": "Galbrena",
+      "action": "z123"
+    },
+    {
+      "character": "Lupa",
+      "action": "super_e"
+    },
+    {
+      "character": "denia",
+      "action": "aa"
+    },
+    {
+      "character": "denia",
+      "action": "ee"
+    },
+    {
+      "character": "denia",
+      "action": "r2"
+    },
+    {
+      "character": "Galbrena",
+      "action": "skill_coordination"
+    },
+    {
+      "character": "Lupa",
+      "action": "eeq"
+    },
+    {
+      "character": "Galbrena",
+      "action": "skill_coordination"
+    },
+    {
+      "character": "Galbrena",
+      "action": "rz"
+    },
+    {
+      "character": "Galbrena",
+      "action": "main"
+    }
+  ],
+  "loop": [
+    {
+      "character": "Lupa",
+      "action": "skill_coordination"
+    },
+    {
+      "character": "Lupa",
+      "action": "ra"
+    },
+    {
+      "character": "Galbrena",
+      "action": "z12"
+    },
+    {
+      "character": "denia",
+      "action": "e"
+    },
+    {
+      "character": "Lupa",
+      "action": "aaa"
+    },
+    {
+      "character": "denia",
+      "action": "r1"
+    },
+    {
+      "character": "denia",
+      "action": "aa"
+    },
+    {
+      "character": "denia",
+      "action": "jump"
+    },
+    {
+      "character": "Lupa",
+      "action": "a"
+    },
+    {
+      "character": "Galbrena",
+      "action": "z123"
+    },
+    {
+      "character": "Lupa",
+      "action": "super_e"
+    },
+    {
+      "character": "denia",
+      "action": "aa_aa"
+    },
+    {
+      "character": "denia",
+      "action": "ee"
+    },
+    {
+      "character": "denia",
+      "action": "r2"
+    },
+    {
+      "character": "Galbrena",
+      "action": "skill_coordination"
+    },
+    {
+      "character": "Galbrena",
+      "action": "q"
+    },
+    {
+      "character": "Lupa",
+      "action": "eeq"
+    },
+    {
+      "character": "Galbrena",
+      "action": "skill_coordination"
+    },
+    {
+      "character": "Galbrena",
+      "action": "rz"
+    },
+    {
+      "character": "Galbrena",
+      "action": "main"
+    }
+  ],
+  "loop2": [],
+  "loop3": [],
+  "finish": []
+}

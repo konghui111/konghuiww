@@ -11,11 +11,17 @@ RESONANCE_CHAIN = 0  # 共鸣链等级 (0-6)
 # ==== 辅助函数 (提取重复逻辑) ====
 
 def _helper_mecha_super_e_cycle(task):
+    _click_interval = 0.07  # 点击间隔 250ms
+    _last_click = 0  # 上次点击时间戳
+    task.click()
     while task.enabled and task._combat_active:  # 等待找 e
-        if check_skill_available(task, "e", skill_image="Aemeath_mecha_super_e"):
+        if check_skill_available(task, "e", skill_image="Aemeath_mecha_super_e"):  # 每帧检测 (~17ms)
             break
-        task.click()
-        time.sleep(0.07)   
+        if time.time() - _last_click >= _click_interval:  # 达到点击间隔才点击
+            task.click()  # 执行点击
+            # task.send_key("q")
+            _last_click = time.time()  # 更新点击时间
+        time.sleep(0.01)  # 短暂等待, 降低 CPU 占用   
     # time.sleep(0.07)     
     while task.enabled and task._combat_active:  # 放 e
         task.send_key("e")
@@ -25,17 +31,28 @@ def _helper_mecha_super_e_cycle(task):
         
 
 def _helper_super_e_cycle(task):        
+    _click_interval = 0.07  # 点击间隔 250ms
+    _last_click = 0  # 上次点击时间戳
+    task.click()
     while task.enabled and task._combat_active:  # 等待找 e
-        if check_skill_available(task, "e", skill_image="Aemeath_super_e"):
+        if check_skill_available(task, "e", skill_image="Aemeath_super_e"):  # 每帧检测 (~17ms)
             break
-        task.click()
-        time.sleep(0.07)  
+        if time.time() - _last_click >= _click_interval:  # 达到点击间隔才点击
+            task.click()  # 执行点击
+            task.send_key("q")
+            _last_click = time.time()  # 更新点击时间
+        time.sleep(0.01)  # 短暂等待, 降低 CPU 占用  
     # time.sleep(0.07)    
     while task.enabled and task._combat_active:  # 放 e
         task.send_key("e")
         time.sleep(0.1)
         if not check_skill_available(task, "e", skill_image="Aemeath_super_e"):
             break
+    # while task.enabled and task._combat_active: 
+    #     if not detect_self_on_field(task, CHARACTER_NAME):
+    #         break  
+    #     time.sleep(0.01)  
+    # time.sleep(0.1)    
         
 
 
@@ -46,16 +63,20 @@ def _helper_r2_finish(task):
     """
     task.mouse_down()  # 按住左键
     while task.enabled and task._combat_active:  # 等待 r2 出现
-        if check_skill_available(task, "e", skill_image="mecha2Aemeath_e1"):
+        if detect_self_on_field(task, CHARACTER_NAME):
             break
-        time.sleep(0.02)
-    # time.sleep(0.1)    
-    # while task.enabled and task._combat_active:  # 等待 r2 消失
-    #     task.send_key("r")  # 按 r
-    #     time.sleep(0.02)
-    #     if not check_skill_available(task, "e", skill_image="mecha2Aemeath_e1"):
-    #         break    
+        time.sleep(0.01)
+    time.sleep(0.35)    
+    while task.enabled and task._combat_active:  # 等待 r2 消失
+        # task.send_key("r")  # 按 r
+        # time.sleep(0.02)
+        if not check_skill_available(task, "e", skill_image="mecha2Aemeath_e1"):
+            # task.send_key("r")
+            break 
+        # time.sleep(0.01)   
+    pause(task,action_name="Aemeath_zr2", trigger_counts=[3],sleep_duration=0.7)    
     continuous_send_key(task,"r", 2)
+    
     # while task.enabled and task._combat_active:  # 等待 r2 出现
     #     if check_skill_available_binary(task, "Aemeath_r", threshold=110, white_threshold=0.1):
     #         break
@@ -76,8 +97,12 @@ def _helper_r2_finish(task):
     #     time.sleep(0.02)
     #     if not check_skill_available(task, "r", skill_image="Aemeath_r2"):
     #         break
-
-    task.mouse_up()    
+    task.mouse_up()
+    while task.enabled and task._combat_active:  
+        if detect_self_on_field(task, CHARACTER_NAME):
+            break
+        time.sleep(0.05)
+       
 
 # ==== 动作函数 ====
 
@@ -91,8 +116,8 @@ def _action_startup(task):
     _action_a4_until_buff(task)    
     while task.enabled and task._combat_active:  # r 等待找不到 e
         task.send_key("r")
-        time.sleep(0.02)
-        if not check_skill_available(task, "e"):
+        time.sleep(0.01)
+        if not detect_self_on_field(task, CHARACTER_NAME):
             break
     #重击
     task.log_info(f"{CHARACTER_NAME} 重击")
@@ -102,7 +127,7 @@ def _action_startup(task):
     while task.enabled and task._combat_active:  # 等待恢复
         if check_skill_available(task, "e", skill_image="mecha2Aemeath_e1"):
             break   
-        time.sleep(0.02)   
+        time.sleep(0.01)   
     task.log_info(f"{CHARACTER_NAME} 等待重击结束")    
     box = get_location_box(task, "Aemeath_forte_location")
     # while task.enabled and task._combat_active:  # 等待二值化条件满足
@@ -112,7 +137,7 @@ def _action_startup(task):
     while task.enabled and task._combat_active:  # 等待找 e
         if check_skill_available(task, "e", skill_image="Aemeath_mecha_super_e"):
             break
-        time.sleep(0.05)   
+        time.sleep(0.01)   
     task.log_info(f"{CHARACTER_NAME} 处决")
     f_execute(task, 1.5)  # 处决  
     task.mouse_up()  # 松开左键  
@@ -134,7 +159,7 @@ def _action_mecha_e(task):
     while task.enabled and task._combat_active:
         if check_skill_available(task, "e", skill_image="Aemeath2mecha_e1"):  # 机兵e可用
             break
-        time.sleep(0.05)  # 轮询间隔
+        time.sleep(0.01)  # 轮询间隔
     while task.enabled and task._combat_active:
         task.send_key("e")
         time.sleep(0.05)  # 轮询间隔
@@ -149,12 +174,16 @@ def _action_a4_until_buff(task):
     """
     aaa: 持续普攻一段时间
     """
-    while task.enabled and task._combat_active:
-        if check_skill_available_by_size(task, "buff",skill_image="Aemeath_a4_buff_large",img_threshold=0.6, min_scale=0.8, max_scale=1,binary_threshold=200):  # e已不可用
-        # if check_skill_available(task, "buff",skill_image="Aemeath_a4_buff",img_threshold=0.6):  # e已不可用
+    _click_interval = 0.07  # 点击间隔 250ms
+    _last_click = 0  # 上次点击时间戳
+    task.click()
+    while task.enabled and task._combat_active:  # 等待找 e
+        if check_skill_available_by_size(task, "buff",skill_image="Aemeath_a4_buff_large",img_threshold=0.6, min_scale=0.8, max_scale=1,binary_threshold=200):  # 每帧检测 (~17ms)
             break
-        task.click()  # 按 e 键
-        time.sleep(0.05)  # 间隔
+        if time.time() - _last_click >= _click_interval:  # 达到点击间隔才点击
+            task.click()  # 执行点击
+            _last_click = time.time()  # 更新点击时间
+        time.sleep(0.01)  # 短暂等待, 降低 CPU 占用
     # time.sleep(0.1)    
     return True
 
@@ -166,15 +195,21 @@ def _action_loop(task):
     aaa找到超级e → 处决 → (公共: super_e循环) → (公共: r2收尾)
     """
     _action_a4_until_buff(task)  
-    f_execute(task, 1.5)  # 处决 
+    # f_execute(task, 1.5)  # 处决 
+    task.send_key("f")
     while task.enabled and task._combat_active:  # r 等待找不到 r
-        task.send_key("q")
+        # task.send_key("q")
         task.send_key("r")
-        time.sleep(0.1)
-        if not check_skill_available(task, "e"):
+        time.sleep(0.01)
+        if not detect_self_on_field(task, CHARACTER_NAME):
             break
-    _helper_super_e_cycle(task)  # 公共: super_e 循环    
     _helper_mecha_super_e_cycle(task)  # 公共: super_e 循环
+    while task.enabled and task._combat_active: 
+        if not detect_self_on_field(task, CHARACTER_NAME):
+            break  
+        time.sleep(0.01) 
+    pause(task,action_name="Aemeath_loop_e", trigger_counts=[1],sleep_duration=0.2)    
+    _helper_super_e_cycle(task)  # 公共: super_e 循环
     _helper_r2_finish(task)  # 公共: r2 收尾
     return True
 register_action(CHARACTER_NAME, "loop")  # 注册循环动作

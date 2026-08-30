@@ -36,6 +36,7 @@ _VK_MAP = {
     "Escape": 0x1B, "Tab": 0x09, "Space": 0x20, "Return": 0x0D,
     "Enter": 0x0D, "Backspace": 0x08,
     "Up": 0x26, "Down": 0x28, "Left": 0x25, "Right": 0x27,
+    "`": 0xC0,  # Tab 上面的反引号键 (VK_OEM_3)
 }
 
 
@@ -106,9 +107,11 @@ class CombatBaseTask(MyBaseTask):
         # ---- 默认配置 (子类可追加) ----
         self.default_config.update({
             "启停热键": "F7",  # 控制战斗开始/停止的按键
+            "pause热键": "`",  # 控制 pause 断点继续的按键
         })
         self.config_description.update({
             "启停热键": "点击按钮后按下要设置的键, 按此键开始/停止战斗。",
+            "pause热键": "点击按钮后按下要设置的键, 在角色脚本中插入 pause() 时按此键触发暂停。",
         })
         self.config_type.update({
             "启停热键": {
@@ -116,12 +119,19 @@ class CombatBaseTask(MyBaseTask):
                 "text": "当前: F7",  # 默认值, run() 执行后更新为实际保存的值
                 "callback": self._capture_hotkey,
             },
+            "pause热键": {
+                "type": "button",
+                "text": "当前: `",  # 默认值, run() 执行后更新为实际保存的值
+                "callback": self._capture_pause_hotkey,
+            },
         })
 
         # ---- 状态变量 ----
         self._combat_active = False  # 战斗是否激活 (热键切换)
-        self._hotkey_btn = None  # 缓存按钮引用
-        self._hotkey_id = 0  # Windows 热键 ID, 0=未注册
+        self._hotkey_btn = None  # 缓存启停热键按钮引用
+        self._pause_hotkey_btn = None  # 缓存 pause 热键按钮引用
+        self._hotkey_id = 0  # Windows 热键 ID (启停), 0=未注册
+        self._pause_hotkey_id = 0  # Windows 热键 ID (pause), 0=未注册
         self._run_stopped = False  # run() 循环退出标志 (on_destroy 设置)
         self._detected_characters = {}  # 识别到的角色 {槽位编号: 角色名}
         self._script_threads = []  # 角色脚本线程列表
@@ -151,6 +161,10 @@ class CombatBaseTask(MyBaseTask):
     def _reset_combat_state(self):
         """将所有战斗运行时状态恢复到初始值, 角色识别和预计算数据保留"""
         self._combat_active = False  # 战斗未激活
+        # 清除 pause 标记, 防止残留到下次战斗
+        from src.character import set_pause, _pause_flag  # 延迟导入
+        import src.character as _char_module
+        _char_module._pause_flag = False
         # 释放可能残留的鼠标和按键状态
         try:
             self.mouse_up(key="left")
@@ -181,7 +195,7 @@ class CombatBaseTask(MyBaseTask):
 
     # ---- 热键管理 ----
     def _register_hotkey(self):
-        """注册全局热键"""
+        """注册全局热键 (F7 启停 + F6 pause)"""
         name = self.config.get("启停热键", "F7")
         vk = _get_vk(name)
         if vk == 0:
@@ -193,13 +207,24 @@ class CombatBaseTask(MyBaseTask):
             self.log_warning(f"热键 {name} 注册失败, 可能已被其他程序占用", notify=True)
             self._hotkey_id = 0
             return False
+        # 注册 pause 热键 (Tab 上面的反引号键或其他配置的键)
+        self._pause_hotkey_id = 0x1002
+        pause_name = self.config.get("pause热键", "`")
+        pause_vk = _get_vk(pause_name)
+        pause_ok = ctypes.windll.user32.RegisterHotKey(None, self._pause_hotkey_id, MOD_NONE, pause_vk)
+        if not pause_ok:
+            self.log_warning(f"热键 {pause_name} (pause) 注册失败, 可能已被其他程序占用")
+            self._pause_hotkey_id = 0
         return True
 
     def _unregister_hotkey(self):
-        """注销全局热键"""
+        """注销全局热键 (F7 + F6)"""
         if self._hotkey_id:
             ctypes.windll.user32.UnregisterHotKey(None, self._hotkey_id)
             self._hotkey_id = 0
+        if self._pause_hotkey_id:
+            ctypes.windll.user32.UnregisterHotKey(None, self._pause_hotkey_id)
+            self._pause_hotkey_id = 0
 
     def _capture_hotkey(self):
         """点击设置热键按钮时弹出捕获窗口"""
@@ -220,6 +245,27 @@ class CombatBaseTask(MyBaseTask):
                 if btn.text().startswith("当前:") or btn.text() == "设置热键":
                     btn.setText(f"当前: {hotkey}")
                     self._hotkey_btn = btn
+                    return
+
+    def _capture_pause_hotkey(self):
+        """点击设置 pause 热键按钮时弹出捕获窗口"""
+        dialog = _HotkeyCaptureDialog()
+        if dialog.exec() and dialog.hotkey:
+            self.config["pause热键"] = dialog.hotkey
+            self._update_pause_hotkey_button(dialog.hotkey)
+            self.log_info(f"pause 热键已设置为: {dialog.hotkey}")
+
+    def _update_pause_hotkey_button(self, hotkey):
+        """更新 pause 按钮显示当前热键"""
+        self.config_type["pause热键"]["text"] = f"当前: {hotkey}"
+        if self._pause_hotkey_btn:
+            self._pause_hotkey_btn.setText(f"当前: {hotkey}")
+            return
+        for top in QApplication.topLevelWidgets():
+            for btn in top.findChildren(PushButton):
+                if btn.text().startswith("当前: `") or btn.text() == "设置 pause 热键":
+                    btn.setText(f"当前: {hotkey}")
+                    self._pause_hotkey_btn = btn
                     return
 
     # ---- 角色识别 ----
@@ -388,6 +434,11 @@ class CombatBaseTask(MyBaseTask):
         self.info_set("角色库", f"{lib_count} 个角色")
         self._update_hotkey_button(hotkey_name)
 
+        # 更新 pause 热键按钮显示
+        pause_hotkey_name = self.config.get("pause热键", "`")
+        self.info_set("pause热键", pause_hotkey_name)
+        self._update_pause_hotkey_button(pause_hotkey_name)
+
         self._detect_characters()  # 预先识别角色
 
         msg = ctypes.wintypes.MSG()
@@ -397,7 +448,14 @@ class CombatBaseTask(MyBaseTask):
             while ctypes.windll.user32.PeekMessageW(ctypes.byref(msg), None, WM_HOTKEY, WM_HOTKEY, 1):
                 msg_vk = (msg.lParam >> 16) & 0xFFFF
                 msg_mod = msg.lParam & 0xFFFF
-                self.log_info(f"[热键] 收到 WM_HOTKEY: 消息id={msg.wParam} 本任务id={self._hotkey_id} vk=0x{msg_vk:02X} mod=0x{msg_mod:02X} 战斗状态={self._combat_active}")
+                self.log_info(f"[热键] 收到 WM_HOTKEY: 消息id={msg.wParam} 启停id={self._hotkey_id} pause_id={self._pause_hotkey_id} vk=0x{msg_vk:02X} mod=0x{msg_mod:02X} 战斗状态={self._combat_active}")
+                # pause 热键处理
+                if msg.wParam == self._pause_hotkey_id:
+                    from src.character import set_pause  # 延迟导入避免循环依赖
+                    set_pause()
+                    self.log_info("[pause] 标记已设置")
+                    continue
+                # 启停热键处理
                 if msg.wParam != self._hotkey_id:
                     self.log_warning(f"[热键] 忽略非本任务的热键消息: 消息id={msg.wParam} vk=0x{msg_vk:02X}")
                     continue

@@ -47,7 +47,7 @@ def _action_3aez(task):
     3aez: 按住鼠标左键 → 等待二值化找色 e
     """
     task.mouse_down()  # 按住鼠标左键
-    box = get_location_box(task, "Mornye_forte_location")
+    # box = get_location_box(task, "Mornye_forte_location")
     # while task.enabled and task._combat_active:  # 等待二值化条件满足 (calculate_binary_percentage 内部自动刷帧)
     #     if box and calculate_binary_percentage(task, box, 192) < 0.05: #0.07859078
     #         break
@@ -57,12 +57,17 @@ def _action_3aez(task):
     #     if box and calculate_binary_percentage(task, box, 192) >= 0.7: #0.07859078 (193,197,241) 0.2552552552552553
     #         break
     #     time.sleep(0.05)
-    time.sleep(1.5)    
+    # time.sleep(1.5)    
+    time.sleep(1)
+    while task.enabled and task._combat_active:  # 等待二值化条件满足 (calculate_binary_percentage 内部自动刷帧)
+        if check_skill_available_by_color(task, "Mornye_forte1",color={'r': (192, 196), 'g': (197, 200), 'b': (240, 247)},color_threshold=0.99):
+            break
+        time.sleep(0.01)    
     # continuous_click(task, 1.9)
     task.log_info(f"{CHARACTER_NAME} 回路足够释放e")    
     while task.enabled and task._combat_active:  #
         task.send_key("e")
-        time.sleep(0.05)
+        time.sleep(0.01)
         if not check_skill_available(task, "e",skill_image="Mornye_e"):
             break
     # while task.enabled and task._combat_active:  # 等待二值化条件满足 (calculate_binary_percentage 内部自动刷帧)
@@ -71,7 +76,12 @@ def _action_3aez(task):
     #     time.sleep(0.05)    
     # time.sleep(0.7)
     task.log_info(f"{CHARACTER_NAME} 回路足够释放重击")    
-    time.sleep(2)     #  z  
+    # time.sleep(2)     #  z  
+    while task.enabled and task._combat_active:  # 等待二值化条件满足 (calculate_binary_percentage 内部自动刷帧)
+        if not (check_skill_available_by_color(task, "Mornye_forte0",color={'r': (192, 196), 'g': (197, 200), 'b': (240, 247)},color_threshold=0.99) or check_skill_available_by_color(task, "Mornye_forte1",color={'r': (192, 196), 'g': (197, 200), 'b': (240, 247)},color_threshold=0.99)):
+            break
+        time.sleep(0.01)
+    time.sleep(1)
     while task.enabled and task._combat_active:
         if _check_special_skill(task):
             break
@@ -82,20 +92,31 @@ register_action(CHARACTER_NAME, "3aez")  # 注册 3aez 动作
 
 def _action_3aezr(task):
     """
-    3aezr: 按住鼠标左键 → 等待二值化找色 e → r → 等待找不到 e
+    3aezr: 按住鼠标左键 → 等待二值化找色 e → r → 等待找不到 e (193,198,241) (195,199,245)
     """
     task.mouse_down()  # 按住鼠标左键
-    box = get_location_box(task, "Mornye_forte_location")
+    box = get_location_box(task, "Mornye_forte0_location")
     # while task.enabled and task._combat_active:  # 等待二值化条件满足 (calculate_binary_percentage 内部自动刷帧)
-    #     if box and calculate_binary_percentage(task, box, 192) < 0.05: #0.07859078
+    #     if box and check_skill_available_by_color(task, box, 192) < 0.05: #0.07859078
     #         break
     #     time.sleep(0.05) 
-    time.sleep(1.5)    #TODO
+    # time.sleep(1.5)    #TODO
+    # while task.enabled and task._combat_active:  # 等待二值化条件满足 (calculate_binary_percentage 内部自动刷帧)
+    #     if check_skill_available_by_color(task, "Mornye_forte0",color={'r': (170, 170), 'g': (249, 249), 'b': (255, 255)},color_threshold=0.99):
+    #         break
+    #     time.sleep(0.05)
+    
+    time.sleep(1)
+    box = get_location_box(task, "Mornye_forte1_location")
     # continuous_click(task, 1.8)
+    while task.enabled and task._combat_active:  # 等待二值化条件满足 (calculate_binary_percentage 内部自动刷帧)
+        if check_skill_available_by_color(task, "Mornye_forte1",color={'r': (192, 196), 'g': (197, 200), 'b': (240, 247)},color_threshold=0.99):
+            break
+        # time.sleep(0.01)    
     task.log_info(f"{CHARACTER_NAME} 回路足够释放e")    
     while task.enabled and task._combat_active:  #
         task.send_key("e")
-        time.sleep(0.05)
+        time.sleep(0.01)
         if not check_skill_available(task, "e",skill_image="Mornye_e"):
             break
     task.log_info(f"{CHARACTER_NAME} 等待z")    
@@ -103,32 +124,76 @@ def _action_3aezr(task):
     #     if box and calculate_binary_percentage(task, box, 192) < 0.05: #0.07859078
     #         break
     #     time.sleep(0.05)    
-    time.sleep(2)     #  z 
+    # time.sleep(2)     #  z 
+    time.sleep(0.4)
+    
+    # # 获取两个回路的检测区域 (只获取一次, 避免循环内重复查找)
+    # forte0_box = get_location_box(task, "Mornye_forte0_location")  # forte0 区域 Box
+    # forte1_box = get_location_box(task, "Mornye_forte1_location")  # forte1 区域 Box
+    # _color = {'r': (192, 196), 'g': (197, 200), 'b': (240, 247)}  # 目标颜色范围
+    # _threshold = 0.99  # 占比阈值
+    # while task.enabled and task._combat_active:  # 等待两个回路颜色都消失
+    #     task.next_frame()  # 获取新帧 (同一帧检测两个区域, 避免两次 next_frame 导致帧不一致)
+    #     pct0 = task.calculate_color_percentage(_color, forte0_box) if forte0_box else 0  # forte0 颜色占比
+    #     pct1 = task.calculate_color_percentage(_color, forte1_box) if forte1_box else 0  # forte1 颜色占比
+    #     if not (pct0 >= _threshold or pct1 >= _threshold):  # 两个区域占比都低于阈值时退出
+    #         break
+    #     task.log_debug(f"{CHARACTER_NAME} forte0={pct0:.4f} forte1={pct1:.4f}")  # 打印实际占比, 用于调试
+    #     time.sleep(0.01)
+    # task.log_info(f"{CHARACTER_NAME} 开始重击 (最终 forte0={pct0:.4f} forte1={pct1:.4f})")
+
+    # 新版: 检测两个回路区域的平均亮度, 任意一个 < 192 即退出
+    forte0_box = get_location_box(task, "Mornye_forte0_location")  # forte0 区域 Box
+    forte1_box = get_location_box(task, "Mornye_forte1_location")  # forte1 区域 Box
+    while task.enabled and task._combat_active:  # 等待任意回路亮度低于阈值
+        task.next_frame()  # 获取新帧
+        frame = task.frame  # 当前帧 (BGR)
+        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)  # 转灰度图
+        b0 = int(gray[forte0_box.y:forte0_box.y + forte0_box.height, forte0_box.x:forte0_box.x + forte0_box.width].mean()) if forte0_box else 255  # forte0 平均亮度
+        b1 = int(gray[forte1_box.y:forte1_box.y + forte1_box.height, forte1_box.x:forte1_box.x + forte1_box.width].mean()) if forte1_box else 255  # forte1 平均亮度
+        if b0 < 192 or b1 < 192:  # 任意一个区域平均亮度 < 192 则退出
+            break
+        task.log_debug(f"{CHARACTER_NAME} 亮度 forte0={b0} forte1={b1}")  # 调试用
+        time.sleep(0.01)
+    task.log_info(f"{CHARACTER_NAME} 开始重击 (最终亮度 forte0={b0} forte1={b1})")    
+    time.sleep(1.4)    
+    # time.sleep(0.2)    
+    # task.send_key_down("r")
     # wait r
     task.log_info(f"{CHARACTER_NAME} 等待r") 
     while task.enabled and task._combat_active:  # 
         if check_skill_available(task, "r", skill_image="Mornye_r2"):
             break    
-        time.sleep(0.05)
+        time.sleep(0.01)
     task.log_info(f"{CHARACTER_NAME} 释放r")     
-    while task.enabled and task._combat_active:  # 
+    # while task.enabled and task._combat_active:  # 
+    #     task.send_key("r")
+    #     time.sleep(0.1)
+    #     if not check_skill_available(task, "r", skill_image="Mornye_r2"):
+    #         break
+    while task.enabled and task._combat_active:  
         task.send_key("r")
-        time.sleep(0.1)
-        if not check_skill_available(task, "r", skill_image="Mornye_r2"):
+        time.sleep(0.05)
+        if not detect_self_on_field(task, CHARACTER_NAME):
             break
+    # task.send_key_up("r")    
     task.log_info(f"{CHARACTER_NAME} 等待r结束")    
     time.sleep(2)    
-    while task.enabled and task._combat_active:  # 
-        if check_skill_available(task, "a"):
+    while task.enabled and task._combat_active:  
+        if detect_self_on_field(task, CHARACTER_NAME):
             break
         time.sleep(0.05)
-    task.send_key("q")
-    time.sleep(0.05)         
-    while task.enabled and task._combat_active:
-        if _check_special_skill(task):
-            break
-        task.click()
+    while task.enabled and task._combat_active:  # 持续按 q 直到 q 消失
+        task.send_key("q")
         time.sleep(0.05)
+        if not check_skill_available(task, "q"):
+            break
+    # time.sleep(0.05)         
+    # while task.enabled and task._combat_active:
+    #     if _check_special_skill(task):
+    #         break
+    #     # task.click()
+    #     time.sleep(0.01)
     return True
 
 
@@ -136,6 +201,8 @@ def _action_skill_coordination(task):
     """变奏动作"""
     task._character_jumping = True  # 标记角色跳跃中
     continuous_click(task, 1.6)  # 持续点击 0.8 秒
+    # slot = int(task._character_slots[CHARACTER_NAME])
+
     return True
 
 

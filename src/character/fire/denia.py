@@ -45,6 +45,12 @@ def _action_er1(task):
     return True
 register_action(CHARACTER_NAME, "er1")  # 注册动作 er1
 
+def _action_jump(task):
+    task.send_key("space")
+    # continuous_click(task, 0.6)
+    return True
+register_action(CHARACTER_NAME, "jump")  #
+
 def _action_aa(task):
     continuous_click(task, 0.6)
     return True
@@ -67,6 +73,15 @@ def _action_aafaa(task):
     continuous_click(task, 0.6)
     return True
 register_action(CHARACTER_NAME, "aafaa")  # 注册动作 aafaa
+
+def _action_aa_aa(task):
+    #不能处决就闪避
+    continuous_click(task, 0.6)
+    task.right_click()
+    time.sleep(0.5)
+    continuous_click(task, 0.6)
+    return True
+register_action(CHARACTER_NAME, "aa_aa")  # 注册动作 aafaa
 
 def _action_ee(task):
     while task.enabled and task._combat_active:  
@@ -176,8 +191,12 @@ def run(task):  # 脚本入口函数, 由 CharacterAutoTask 在子线程中调�
                 action_success = _action_aa(task)
             elif axis_action == "a34":  # 普攻 a34
                 action_success = _action_a34(task)
+            elif axis_action == "jump":  #跳
+                action_success = _action_jump(task)    
             elif axis_action == "aafaa":  # 普攻+处决+普攻
                 action_success = _action_aafaa(task)
+            elif axis_action == "aa_aa":  # 普攻+处决+普攻
+                action_success = _action_aa_aa(task)    
             elif axis_action == "ee":  # ee+r2 连招
                 action_success = _action_ee(task)
             elif axis_action == "r2":  # r2 连招

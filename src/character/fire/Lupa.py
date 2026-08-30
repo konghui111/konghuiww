@@ -7,6 +7,107 @@ ELEMENT = Elements.FIRE  # 角色属性: 热熔
 RESONANCE_CHAIN = 0  # 共鸣链等级 (0-6)
 
 
+def _action_ra(task):
+    """ra: r释放成功后2秒开始按住鼠标左键"""
+    # 等待 r 可用
+    while task.enabled and task._combat_active:
+        if check_skill_available(task, "r", skill_image="Lupa_r"):
+            break
+        time.sleep(0.05)
+    # 持续按 r 直到 r 消失
+    while task.enabled and task._combat_active:
+        task.send_key("r")
+        time.sleep(0.1)
+        if not check_skill_available(task, "r", skill_image="Lupa_r"):
+            break
+    time.sleep(3)  # 等待 2 秒
+    while task.enabled and task._combat_active:
+        if check_skill_available(task, "e", skill_image="Lupa_super_a"):
+            break
+        time.sleep(0.05)
+    while task.enabled and task._combat_active:
+        # task.click()
+        task.send_key("e")
+        time.sleep(0.1)
+        if not check_skill_available(task, "e", skill_image="Lupa_super_a"):
+            break        
+    # task.mouse_down()  # 按住左键
+    # time.sleep(0.5)  # 保持按住
+    # task.mouse_up()  # 释放
+    return True
+register_action(CHARACTER_NAME, "ra")  # 注册动作 ra
+
+def _action_aaa(task):
+    """aaa: 持续攻击一段时间"""
+    continuous_click(task, 1.5)  # 持续攻击 1.5 秒
+    return True
+register_action(CHARACTER_NAME, "aaa")  # 注册动作 aaa
+
+def _action_a(task):
+    """a: 持续攻击一段时间"""
+    continuous_click(task, 0.2)  # 持续攻击 0.8 秒
+    return True
+register_action(CHARACTER_NAME, "a")  # 注册动作 a
+
+def _action_super_e(task):
+    """super_e: 强化 e 技能"""
+    # 等待 e 可用
+    while task.enabled and task._combat_active:
+        if check_skill_available(task, "e", skill_image="Lupa_super_e"):
+            break
+        time.sleep(0.05)
+    # 持续按 e 直到 e 消失
+    while task.enabled and task._combat_active:
+        task.send_key("e")
+        time.sleep(0.1)
+        if not check_skill_available(task, "e", skill_image="Lupa_super_e"):
+            break
+    return True
+register_action(CHARACTER_NAME, "super_e")  # 注册动作 super_e
+
+def _action_eeq(task):
+    """eeq: 连续释放 e1 e2 q"""
+    # 释放 e1
+    while task.enabled and task._combat_active:
+        if check_skill_available(task, "e", skill_image="Lupa_e1"):
+            break
+        time.sleep(0.05)
+    while task.enabled and task._combat_active:
+        task.send_key("e")
+        time.sleep(0.05)
+        if not check_skill_available(task, "e", skill_image="Lupa_e1"):
+            break
+    # time.sleep(0.2)
+    # 释放 e2
+    while task.enabled and task._combat_active:
+        if check_skill_available(task, "e", skill_image="Lupa_e2"):
+            break
+        time.sleep(0.05)
+    while task.enabled and task._combat_active:
+        task.send_key("e")
+        time.sleep(0.05)
+        if not check_skill_available(task, "e", skill_image="Lupa_e2"):
+            break
+    # time.sleep(0.2)
+    # 释放 q
+    task.send_key("q")
+    while task.enabled and task._combat_active:
+        if _check_special_skill(task):
+            break
+        time.sleep(0.05)    
+    # while task.enabled and task._combat_active:
+    #     if check_skill_available(task, "q", skill_image="Lupa_q"):
+    #         break
+    #     time.sleep(0.05)
+    # while task.enabled and task._combat_active:
+    #     task.send_key("q")
+    #     time.sleep(0.05)
+    #     if not check_skill_available(task, "q", skill_image="Lupa_q"):
+    #         break
+    return True
+register_action(CHARACTER_NAME, "eeq")  # 注册动作 eeq
+
+
 def _check_special_skill(task):  # 检测协奏值是否已满 (特殊技能是否可以释放)
     """通过 task.is_con_full() 检测当前角色的协奏值是否已满。"""
     hotkey = None  # 当前角色槽位
@@ -21,7 +122,7 @@ def _check_special_skill(task):  # 检测协奏值是否已满 (特殊技能是�
 
 def _action_skill_coordination(task):  # 特殊技能-变奏: 新登场角色触发的变奏动作
     """被特殊技能强制切换上场后执行的变奏动作。"""
-    continuous_click(task, 0.80)
+    continuous_click(task, 0.1)
     return True
 register_action(CHARACTER_NAME, "skill_coordination", force_clear=True)  # 注册变奏动作
 
@@ -53,7 +154,17 @@ def run(task):  # 脚本入口函数, 由 CharacterAutoTask 在子线程中调�
         axis_action = get_axis_command(task, CHARACTER_NAME)  # 获取并清除轴命令
         if axis_action:  # 有轴命令
             task.log_info(f"{CHARACTER_NAME} 收到轴命令: {axis_action}")
-            if axis_action == "skill_coordination":  # 变奏
+            if axis_action == "ra":  # r + 重击
+                action_success = _action_ra(task)
+            elif axis_action == "aaa":  # 普攻 aaa
+                action_success = _action_aaa(task)
+            elif axis_action == "a":  # 普攻 a
+                action_success = _action_a(task)
+            elif axis_action == "super_e":  # 强化 e
+                action_success = _action_super_e(task)
+            elif axis_action == "eeq":  # e1 + e2 + q
+                action_success = _action_eeq(task)
+            elif axis_action == "skill_coordination":  # 变奏
                 action_success = _action_skill_coordination(task)
             else:  # 未知动作
                 task.log_error(f"轴配置错误: {CHARACTER_NAME} 未知动作 {axis_action}")

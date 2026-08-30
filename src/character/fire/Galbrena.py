@@ -7,6 +7,93 @@ ELEMENT = Elements.FIRE  # 角色属性: 热熔
 RESONANCE_CHAIN = 0  # 共鸣链等级 (0-6)
 
 
+
+def _action_z12(task):
+    """重击 z12: 长按左键一段时间后释放"""
+    task.mouse_down()  # 按住左键
+    time.sleep(0.6)  # 蓄力
+    task.mouse_up()  # 释放
+    return True
+register_action(CHARACTER_NAME, "z12")  # 注册动作 z12
+
+def _action_z123(task):
+    """重击 z123: 长按左键更长时间后释放"""
+    task.mouse_down()  # 按住左键
+    time.sleep(1.3)  # 蓄力更久
+    task.mouse_up()  # 释放
+    return True
+register_action(CHARACTER_NAME, "z123")  # 注册动作 z123
+
+def _action_rz(task):
+    """rz: r释放成功后2秒开始按住鼠标左键"""
+    # 等待 r 可用
+    while task.enabled and task._combat_active:
+        if check_skill_available(task, "r", skill_image="Galbrena_r"):
+            break
+        time.sleep(0.05)
+    # 持续按 r 直到 r 消失
+    while task.enabled and task._combat_active:
+        task.send_key("r")
+        time.sleep(0.05)
+        if not check_skill_available(task, "r", skill_image="Galbrena_r"):
+            break
+    time.sleep(2)  # 等待 2 秒
+    task.mouse_down()  # 按住左键 
+    
+    # time.sleep(0.3)    
+    # time.sleep(0.5)  # 保持按住
+    # task.mouse_up()  # 释放
+    return True
+register_action(CHARACTER_NAME, "rz")  # 注册动作 rz
+
+def _action_q(task):
+    task.send_key("q")
+    return True
+register_action(CHARACTER_NAME, "q")
+
+def _action_main(task):
+    """main: 持续攻击一段时间后点鼠标右键闪避"""
+    while task.enabled and task._combat_active:
+        task.send_key("f")
+        # f_execute(task,1.6)
+        time.sleep(0.05)
+        if check_skill_available(task, "e", skill_image="Galbrena_super_e"):
+            break
+        time.sleep(0.05)
+    # f_execute(task,1.6)    
+    task.mouse_up()    
+    # while task.enabled and task._combat_active:
+    #     task.send_key("e")
+    #     time.sleep(0.05)
+    #     if not check_skill_available(task, "e", skill_image="Galbrena_super_e"):
+    #         break    
+    while task.enabled and task._combat_active:
+        if check_skill_available(task, "a", skill_image="Galbrena_super_a"):
+            break
+        task.send_key("e")
+        time.sleep(0.05)    
+    continuous_click(task, 4.4)  # 持续攻击 2 秒
+    task.right_click()  # 右键闪避
+    time.sleep(0.5)
+    continuous_click(task, 2.9)
+    task.right_click()  # 右键闪避
+    time.sleep(0.5)
+    continuous_click(task, 0.7)
+    task.mouse_down()
+    time.sleep(0.5)
+    return True
+register_action(CHARACTER_NAME, "main")  # 注册动作 main
+
+def _action_main_half(task):
+    """main_half: 持续攻击一段时间后长按鼠标左键"""
+    continuous_click(task, 1.5)  # 持续攻击 1.5 秒
+    task.mouse_down()  # 长按左键
+    time.sleep(0.5)  # 保持按住
+    task.mouse_up()  # 释放
+    return True
+register_action(CHARACTER_NAME, "main_half")  # 注册动作 main_half
+
+
 def _check_special_skill(task):  # 检测协奏值是否已满 (特殊技能是否可以释放)
     """通过 task.is_con_full() 检测当前角色的协奏值是否已满。"""
     hotkey = None  # 当前角色槽位
@@ -21,7 +108,7 @@ def _check_special_skill(task):  # 检测协奏值是否已满 (特殊技能是�
 
 def _action_skill_coordination(task):  # 特殊技能-变奏: 新登场角色触发的变奏动作
     """被特殊技能强制切换上场后执行的变奏动作。"""
-    continuous_click(task, 0.80)
+    continuous_click(task, 0.8)
     return True
 register_action(CHARACTER_NAME, "skill_coordination", force_clear=True)  # 注册变奏动作
 
@@ -53,7 +140,19 @@ def run(task):  # 脚本入口函数, 由 CharacterAutoTask 在子线程中调�
         axis_action = get_axis_command(task, CHARACTER_NAME)  # 获取并清除轴命令
         if axis_action:  # 有轴命令
             task.log_info(f"{CHARACTER_NAME} 收到轴命令: {axis_action}")
-            if axis_action == "skill_coordination":  # 变奏
+            if axis_action == "z12":  # 重击 z12
+                action_success = _action_z12(task)
+            elif axis_action == "z123":  # 重击 z123
+                action_success = _action_z123(task)
+            elif axis_action == "q":  #
+                action_success = _action_q(task)    
+            elif axis_action == "rz":  # r + 重击
+                action_success = _action_rz(task)
+            elif axis_action == "main":  # 主连招
+                action_success = _action_main(task)
+            elif axis_action == "main_half":  # 半连招
+                action_success = _action_main_half(task)
+            elif axis_action == "skill_coordination":  # 变奏
                 action_success = _action_skill_coordination(task)
             else:  # 未知动作
                 task.log_error(f"轴配置错误: {CHARACTER_NAME} 未知动作 {axis_action}")

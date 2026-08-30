@@ -1,6 +1,7 @@
 import time  # 导入时间模块, 子线程中用 time.sleep 代替 task.sleep
 import cv2  # 导入 OpenCV, 用于二值化处理
 import numpy as np  # 导入 numpy, 用于图像数组运算
+import inspect  # 导入 inspect, 用于从调用栈获取调用者的 CHARACTER_NAME
 from enum import StrEnum, IntEnum  # 导入枚举基类
 from ok import Box  # 导入 Box 类, 用于构造位置区域
 
@@ -266,6 +267,22 @@ def check_skill_available_by_color(task, area, color, color_threshold=0.02):  # 
     return color_ok
 
 
+def check_enemy_on(task):  # 检测敌人是否在场 (通过血条颜色)
+    """
+    在 enemy_health_location 区域检测 RGB(255,178,69) 颜色, 判断敌人是否在场。
+    :param task: 任务对象
+    :param color_threshold: 颜色占比阈值, 大于此值视为敌人存在, 默认 0.02
+    :return: True=敌人存在, False=不存在
+    """
+    box = get_location_box(task, "enemy_health_location")  # 获取敌人血条区域
+    if not box:  # 位置不存在
+        return False
+    task.next_frame()  # 获取新帧用于找色
+    color = {'r': (252, 255), 'g': (175, 181), 'b': (66, 72)}  # RGB(255,178,69) 颜色范围
+    pct = task.calculate_color_percentage(color, box)  # 计算区域内该颜色像素占比
+    return pct >= 0.99  # 占比超过阈值视为敌人存在
+
+
 def check_skill_available_by_size(task, area, skill_image, img_threshold=0.7,
                                   min_scale=0.5, max_scale=1.5, scale_step=0.1,
                                   binary_threshold=244):  # 多尺度识图判断技能是否可用
@@ -435,6 +452,69 @@ def enable_mouse_tracking(task):  # 包装 task 的 mouse_down/mouse_up, 记录�
 
 def is_mouse_held(task, key="left"):  # 脚本当前是否按住指定鼠标键
     return key in getattr(task, "_held_mouse_keys", ())  # 未包装时返回 False
+
+
+# ==== 断点继续 (pause) 功能 ====
+_pause_flag = False  # pause 触发标记 (配置的 pause 热键设置为 True, pause() 读取后清除)
+
+
+def set_pause():  # pause 热键回调中调用, 设置 pause 标记
+    global _pause_flag
+    _pause_flag = True
+
+
+def pause(task, action_name=None, trigger_counts=None, sleep_duration=0.4):
+    """
+    断点继续: 支持简单模式和计数模式。
+
+    简单模式: pause(task)
+        按 pause 热键后 sleep, 每次触发只生效一次。
+
+    计数模式: pause(task, "action_a", [2, 4, 6])
+        每次调用计数+1, 计数达到指定值时 sleep。
+        例如 [2, 4, 6] 表示第 2/4/6 次调用时触发 sleep。
+
+    :param task: 任务对象
+    :param action_name: 动作名称 (用于区分不同 pause 计数器), 不传则使用简单模式
+    :param trigger_counts: 触发计数的数组 (如 [2, 4, 6]), 不传则使用简单模式
+    :param sleep_duration: 暂停时长 (秒), 默认 0.4
+    """
+    global _pause_flag
+
+    # 从调用栈获取调用者的 CHARACTER_NAME (角色脚本中的模块级变量)
+    caller_frame = inspect.stack()[1].frame  # 获取调用者的栈帧
+    char_name = caller_frame.f_locals.get('CHARACTER_NAME', None)  # 从调用者局部变量获取
+    if char_name is None:
+        char_name = caller_frame.f_globals.get('CHARACTER_NAME', '未知角色')  # 回退到全局变量
+
+    # 简单模式: 没有传 action_name 和 trigger_counts
+    if action_name is None or trigger_counts is None:
+        if not _pause_flag:
+            return
+        _pause_flag = False  # 清除标记, 本轮只触发一次
+        task.log_info(f"{char_name} pause 触发, 暂停 {sleep_duration}s")
+        time.sleep(sleep_duration)
+        return
+
+    # 计数模式: 需要获取当前角色的槽位
+    slot = None
+    for s, name in task._detected_characters.items():
+        if name == char_name:
+            slot = s
+            break
+    if slot is None:
+        task.log_warning(f"{char_name} 未找到槽位, pause 计数模式失效")
+        return
+
+    states = task._char_data[slot].setdefault('states', {})  # 获取自定义状态
+    count_key = f"{action_name}_pause_count"  # 计数器键名
+    current_count = states.get(count_key, 0) + 1  # 计数+1
+    states[count_key] = current_count  # 更新计数器
+
+    # 检查是否达到触发条件, 计数模式自动触发 sleep, 不需要按键
+    if current_count in trigger_counts:
+        task.log_info(f"{char_name} pause[{action_name}] 第{current_count}次触发, 暂停 {sleep_duration}s")
+        time.sleep(sleep_duration)
 
 
 def wait_for_my_turn(task, hotkey, character_name):  # 等待轮到自己上场, 不在场时线程挂起, 零 CPU
