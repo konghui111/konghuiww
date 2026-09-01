@@ -383,6 +383,24 @@
             "file_name": "images/9.png",
             "width": 2560,
             "height": 1440
+        },
+        {
+            "id": 70,
+            "file_name": "images/28.png",
+            "width": 2560,
+            "height": 1440
+        },
+        {
+            "id": 71,
+            "file_name": "images/29.png",
+            "width": 2560,
+            "height": 1440
+        },
+        {
+            "id": 73,
+            "file_name": "images/30.png",
+            "width": 2560,
+            "height": 1440
         }
     ],
     "annotations": [
@@ -1984,6 +2002,136 @@
             ],
             "area": 4,
             "iscrowd": 0
+        },
+        {
+            "id": 124,
+            "image_id": 70,
+            "category_id": 124,
+            "bbox": [
+                2146,
+                1273,
+                37,
+                33
+            ],
+            "area": 1221,
+            "iscrowd": 0
+        },
+        {
+            "id": 125,
+            "image_id": 70,
+            "category_id": 125,
+            "bbox": [
+                2403,
+                1282,
+                27,
+                40
+            ],
+            "area": 1080,
+            "iscrowd": 0
+        },
+        {
+            "id": 126,
+            "image_id": 70,
+            "category_id": 126,
+            "bbox": [
+                2361,
+                477,
+                50,
+                50
+            ],
+            "area": 2500,
+            "iscrowd": 0
+        },
+        {
+            "id": 127,
+            "image_id": 70,
+            "category_id": 127,
+            "bbox": [
+                2367,
+                301,
+                50,
+                50
+            ],
+            "area": 2500,
+            "iscrowd": 0
+        },
+        {
+            "id": 128,
+            "image_id": 71,
+            "category_id": 128,
+            "bbox": [
+                2389,
+                1271,
+                33,
+                31
+            ],
+            "area": 1023,
+            "iscrowd": 0
+        },
+        {
+            "id": 129,
+            "image_id": 71,
+            "category_id": 129,
+            "bbox": [
+                2139,
+                1275,
+                26,
+                28
+            ],
+            "area": 728,
+            "iscrowd": 0
+        },
+        {
+            "id": 130,
+            "image_id": 71,
+            "category_id": 131,
+            "bbox": [
+                1448,
+                1336,
+                1,
+                2
+            ],
+            "area": 2,
+            "iscrowd": 0
+        },
+        {
+            "id": 131,
+            "image_id": 73,
+            "category_id": 130,
+            "bbox": [
+                2147,
+                1271,
+                33,
+                35
+            ],
+            "area": 1155,
+            "iscrowd": 0
+        },
+        {
+            "id": 132,
+            "image_id": 73,
+            "category_id": 132,
+            "bbox": [
+                1304,
+                1338,
+                1,
+                2
+            ],
+            "area": 2,
+            "iscrowd": 0
+        },
+        {
+            "id": 133,
+            "image_id": 73,
+            "category_id": 133,
+            "bbox": [
+                1275,
+                1319,
+                11,
+                7
+            ],
+            "area": 77,
+            "iscrowd": 0
         }
     ],
     "categories": [
@@ -2600,6 +2748,56 @@
         {
             "id": 123,
             "name": "yangyang_yu_location",
+            "supercategory": ""
+        },
+        {
+            "id": 124,
+            "name": "sanhua_e",
+            "supercategory": ""
+        },
+        {
+            "id": 125,
+            "name": "sanhua_r",
+            "supercategory": ""
+        },
+        {
+            "id": 126,
+            "name": "character_sanhua",
+            "supercategory": ""
+        },
+        {
+            "id": 127,
+            "name": "character_HavocRover",
+            "supercategory": ""
+        },
+        {
+            "id": 128,
+            "name": "HavocRover_r",
+            "supercategory": ""
+        },
+        {
+            "id": 129,
+            "name": "HavocRover_e",
+            "supercategory": ""
+        },
+        {
+            "id": 130,
+            "name": "HavocRover_super_e",
+            "supercategory": ""
+        },
+        {
+            "id": 131,
+            "name": "HavocRover_forte_begin_location",
+            "supercategory": ""
+        },
+        {
+            "id": 132,
+            "name": "HavocRover_forte_end",
+            "supercategory": ""
+        },
+        {
+            "id": 133,
+            "name": "HavocRover_forte_location",
             "supercategory": ""
         }
     ]

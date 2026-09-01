@@ -6,6 +6,14 @@ SWITCH_PRIORITY = SwitchPriority.NORMAL  # 切换优先级: 普通
 ELEMENT = Elements.WIND  # 角色属性: 衍射 (对应协奏值环颜色索引 0)
 RESONANCE_CHAIN = 0  # 共鸣链等级 (0-6)
 
+#f 2s
+
+def _action_a12fa3(task):
+    _action_a12(task)
+    f_execute(task,2)
+    continuous_click(task, 0.1)
+    return True
+register_action(CHARACTER_NAME, "a12fa3")  # 注册动作 a12fa3
 
 def _action_a234(task):
     continuous_click(task, 1)
@@ -32,6 +40,7 @@ def _action_main(task):
     while task.enabled and task._combat_active:
         if check_skill_available(task, "e", skill_image="qingxiao_e"):  
             break
+        task.send_key("f")
         task.send_key("e")
         time.sleep(0.07)  # 轮询间隔
     #e放技能    
@@ -43,19 +52,26 @@ def _action_main(task):
     #按住左键
     task.mouse_down()
     while task.enabled and task._combat_active:
+        task.send_key("f")
         time.sleep(0.07)  # 轮询间隔
         if not check_skill_available(task, "a", skill_image="qingxiao_a"):  
             break    
     #循环按F 两秒钟
-    continuous_send_key(task,"f", 3)
+    # continuous_send_key(task,"f", 3)
     #等到普攻按键出现
-    while task.enabled and task._combat_active:
-        if check_skill_available(task, "a", skill_image="qingxiao_a"):  
-            break 
-        time.sleep(0.07)   
+    # while task.enabled and task._combat_active:
+    #     if check_skill_available(task, "a", skill_image="qingxiao_a"):  
+    #         break 
+    #     time.sleep(0.07)   
     #循环按F 0.2秒
     # time.sleep(0.3)
-    continuous_send_key(task,"f", 0.6)
+    # continuous_send_key(task,"f", 0.6)
+    while task.enabled and task._combat_active:
+        if detect_self_on_field(task, CHARACTER_NAME):
+            break
+        time.sleep(0.05)
+    # continuous_send_key(task,"f", 0.1)  
+    f_execute(task,2)      
     #r
     while task.enabled and task._combat_active:
         if check_skill_available(task, "r", skill_image="qingxiao_r"):  
@@ -123,6 +139,8 @@ def run(task):  # 脚本入口函数, 由 CharacterAutoTask 在子线程中调�
             task.log_info(f"{CHARACTER_NAME} 收到轴命令: {axis_action}")
             if axis_action == "a234":  # 普攻
                 action_success = _action_a234(task)
+            elif axis_action == "a12fa3":  # a12+处决+a3
+                action_success = _action_a12fa3(task)
             elif axis_action == "a12":  # a12 连招
                 action_success = _action_a12(task)
             elif axis_action == "a123":  # a123 连招

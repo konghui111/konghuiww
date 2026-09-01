@@ -1,12 +1,40 @@
 {
   "startup": [
     {
+      "character": "feixue",
+      "action": "e"
+    },
+    {
+      "character": "suisui",
+      "action": "normal_a23"
+    },
+    {
+      "character": "feixue",
+      "action": "a"
+    },
+    {
+      "character": "jianxin",
+      "action": "r"
+    },
+    {
+      "character": "jianxin",
+      "action": "e"
+    },
+    {
+      "character": "feixue",
+      "action": "aa"
+    },
+    {
       "character": "suisui",
       "action": "a4e"
     },
     {
       "character": "feixue",
-      "action": "aa"
+      "action": "a"
+    },
+    {
+      "character": "jianxin",
+      "action": "e"
     },
     {
       "character": "suisui",
@@ -17,8 +45,16 @@
       "action": "skill_coordination"
     },
     {
+      "character": "feixue",
+      "action": "zr1"
+    },
+    {
       "character": "jianxin",
-      "action": "main"
+      "action": "main_short"
+    },
+    {
+      "character": "feixue",
+      "action": "skill_coordination"
     },
     {
       "character": "feixue",
@@ -27,12 +63,28 @@
   ],
   "loop": [
     {
+      "character": "feixue",
+      "action": "e"
+    },
+    {
       "character": "suisui",
       "action": "skill_coordination"
     },
     {
-      "character": "suisui",
-      "action": "aaaa"
+      "character": "feixue",
+      "action": "aa"
+    },
+    {
+      "character": "jianxin",
+      "action": "r"
+    },
+    {
+      "character": "jianxin",
+      "action": "e"
+    },
+    {
+      "character": "feixue",
+      "action": "a"
     },
     {
       "character": "suisui",
@@ -43,6 +95,10 @@
       "action": "aa"
     },
     {
+      "character": "jianxin",
+      "action": "e"
+    },
+    {
       "character": "suisui",
       "action": "ea4qr"
     },
@@ -51,8 +107,16 @@
       "action": "skill_coordination"
     },
     {
+      "character": "feixue",
+      "action": "zr1"
+    },
+    {
       "character": "jianxin",
-      "action": "main"
+      "action": "main_short"
+    },
+    {
+      "character": "feixue",
+      "action": "skill_coordination"
     },
     {
       "character": "feixue",

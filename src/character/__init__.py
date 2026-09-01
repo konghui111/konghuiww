@@ -135,21 +135,36 @@ def detect_hotkey(task, character_name):  # 检测当前角色占据的是哪个
     _location 图片仅使用位置信息作为搜索区域, 不使用其图片进行匹配。
     找到后将角色→槽位映射存入 task._character_slots, 供 detect_self_on_field 使用。
     返回槽位编号字符串, 未找到则返回 None。
+    
+    支持多头像 (皮肤): 如果角色模块定义了 AVATAR_ALTS 列表, 会依次尝试所有头像。
     """
     if not hasattr(task, '_character_slots'):  # 首次调用时初始化映射字典
         task._character_slots = {}
+    
+    # 获取备选头像列表 (用于支持多皮肤)
+    avatar_alts = []
+    module = CHARACTER_LIBRARY.get(character_name)
+    if module and hasattr(module, 'AVATAR_ALTS'):
+        avatar_alts = module.AVATAR_ALTS
+    
+    # 构建所有要尝试的头像名称列表 (主头像 + 备选头像)
+    avatar_names = [f"character_{character_name}"] + [f"character_{alt}" for alt in avatar_alts]
+    
     task.next_frame()  # 获取新帧用于找图
     for i in range(1, MAX_CHARACTERS + 1):  # 依次检查第 1 到第 3 个槽位
         location_name = f"character{i}_location"  # 构造位置特征名, 如 "character1_location"
         location_feature = task.get_feature_by_name(location_name)  # 获取 _location 的预定义位置 (不做模板匹配)
         if not location_feature:  # 该槽位位置不存在则跳过
             continue
-        char_name = f"character_{character_name}"  # 构造角色模板名, 如 "character_qianxiao"
-        found = task.find_one(char_name, box=location_feature)  # 在该位置区域内查找角色图片
-        if found:  # 如果在此槽位找到了角色
-            task._character_slots[character_name] = str(i)  # 存储角色→槽位映射
-            task.log_info(f"检测到 {character_name} 在槽位 {i}")  # 记录找到的槽位
-            return str(i)  # 返回槽位编号作为按键
+        
+        # 尝试所有头像 (主头像 + 备选头像)
+        for avatar_name in avatar_names:
+            found = task.find_one(avatar_name, box=location_feature)  # 在该位置区域内查找角色图片
+            if found:  # 如果在此槽位找到了角色 (任意头像匹配)
+                task._character_slots[character_name] = str(i)  # 存储角色→槽位映射
+                task.log_info(f"检测到 {character_name} 在槽位 {i} (头像: {avatar_name})")  # 记录找到的槽位和头像
+                return str(i)  # 返回槽位编号作为按键
+    
     task.log_warning(f"未在任何槽位中找到 {character_name}")  # 所有槽位都未找到
     return None  # 未匹配到任何槽位
 
@@ -248,6 +263,28 @@ def check_skill_available(task, area, white_threshold=0.02, skill_image="",img_t
     # task.log_info(f"check_skill_available 结束")
     return 1 if pct >= white_threshold else 0  # 纯白占比超过阈值视为可用
 
+
+def check_image_match(task, area, skill_image, img_threshold=0.7):  # 纯找图匹配
+    """
+    纯模板匹配, 不做二值化也不识别颜色, 只在指定区域找图。
+    :param task: 任务对象
+    :param area: 区域名, 如 "e"、"q", 内部拼接为 "e_location"
+    :param skill_image: 技能图片名, 必须提供
+    :param img_threshold: 匹配阈值, 默认 0.7
+    :return: 1=找到, 0=未找到
+    """
+    if not skill_image:  # 必须提供图片名
+        task.log_warning("check_image_match: skill_image 不能为空")
+        return 0
+    location_name = f"{area}_location"  # 拼接位置特征名
+    box = get_location_box(task, location_name)  # 获取该区域的 Box
+    if not box:  # 位置不存在
+        return 0
+    task.next_frame()  # 获取新帧
+    found = task.find_one(skill_image, box=box, threshold=img_threshold)  # 纯模板匹配
+    return 1 if found is not None else 0
+
+
 def check_skill_available_by_color(task, area, color, color_threshold=0.02):  # 识别技能是否可用
     """
     通过找色来判断技能是否可用。
@@ -284,7 +321,7 @@ def check_enemy_on(task):  # 检测敌人是否在场 (通过血条颜色)
 
 
 def check_skill_available_by_size(task, area, skill_image, img_threshold=0.7,
-                                  min_scale=0.5, max_scale=1.5, scale_step=0.1,
+                                  min_scale=1, max_scale=1, scale_step=0.1,
                                   binary_threshold=244):  # 多尺度识图判断技能是否可用
     """
     多尺度模板匹配判断技能是否可用: 目标在 原图大小*min_scale ~ 原图大小*max_scale
@@ -414,7 +451,8 @@ def f_execute(task, f_time=1.6):  # 处决检测与执行: 屏幕中央找处决
     # 找处决按键图片: 降采样到 720p 匹配提速, 结果坐标自动换算回原尺度
     found = task.find_one("f_break", box=box, threshold=F_BREAK_THRESHOLD,
                               target_height=F_BREAK_TARGET_HEIGHT)
-    if found or can_f:  # 找到 = 一定可处决
+    # if found or can_f:  # 找到 = 一定可处决
+    if can_f:  # 找到 = 一定可处决    
         task.log_info(f"处决 开始")
         task.send_key("f")  # 按 F 处决
         time.sleep(f_time)  # 等处决动画
@@ -655,18 +693,20 @@ from src.character.electric import rebecca
 # 热熔 (FIRE)
 from src.character.fire import Aemeath, Mornye, denia, Galbrena, Lupa
 # 冰属性 (ICE)
-from src.character.ice import feixue, suisui
+from src.character.ice import feixue, suisui, sanhua
 # 气动 (WIND)
 from src.character.wind import qingxiao, jianxin, xigelika, qiuyuan
 # 湮灭 (HAVOC)
-from src.character.havoc import qianxiao, yangyang
+from src.character.havoc import qianxiao, yangyang, HavocRover
 
 CHARACTER_LIBRARY = {  # 角色库: 角色名 → 脚本模块, 新增角色在此注册
     "qianxiao": qianxiao,  # 千晓
     "yangyang": yangyang,
+    "HavocRover": HavocRover,  # 漂泊者 (湮灭)
     "suisui": suisui,
     "Linnai": Linnai,
     "feixue": feixue,
+    "sanhua": sanhua,  # 散华
     "Aemeath": Aemeath,
     "Mornye": Mornye,
     "qingxiao": qingxiao,

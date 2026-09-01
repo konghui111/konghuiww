@@ -1,0 +1,161 @@
+{
+  "startup": [
+    {
+      "character": "HavocRover",
+      "action": "r"
+    },
+    {
+      "character": "HavocRover",
+      "action": "e"
+    },
+    {
+      "character": "sanhua",
+      "action": "zer"
+    },
+    {
+      "character": "verina",
+      "action": "main"
+    },
+    {
+      "character": "HavocRover",
+      "action": "skill_coordination"
+    },
+    {
+      "character": "HavocRover",
+      "action": "q"
+    },
+    {
+      "character": "sanhua",
+      "action": "aa"
+    },
+    {
+      "character": "HavocRover",
+      "action": "skill_coordination"
+    },
+    {
+      "character": "HavocRover",
+      "action": "ze"
+    },
+    {
+      "character": "HavocRover",
+      "action": "aaa"
+    }
+  ],
+  "loop": [
+    {
+      "character": "sanhua",
+      "action": "skill_coordination"
+    },
+    {
+      "character": "sanhua",
+      "action": "zer"
+    },
+    {
+      "character": "verina",
+      "action": "ea"
+    },
+    {
+      "character": "HavocRover",
+      "action": "aaae"
+    },
+    {
+      "character": "sanhua",
+      "action": "aa"
+    },
+    {
+      "character": "HavocRover",
+      "action": "skill_coordination"
+    },
+    {
+      "character": "HavocRover",
+      "action": "ze"
+    },
+    {
+      "character": "HavocRover",
+      "action": "aaa"
+    },
+    {
+      "character": "sanhua",
+      "action": "skill_coordination"
+    },
+    {
+      "character": "sanhua",
+      "action": "zer"
+    },
+    {
+      "character": "verina",
+      "action": "main"
+    },
+    {
+      "character": "HavocRover",
+      "action": "skill_coordination"
+    },
+    {
+      "character": "HavocRover",
+      "action": "q"
+    },
+    {
+      "character": "HavocRover",
+      "action": "e"
+    },
+    {
+      "character": "sanhua",
+      "action": "aa"
+    },
+    {
+      "character": "HavocRover",
+      "action": "skill_coordination"
+    },
+    {
+      "character": "HavocRover",
+      "action": "ze"
+    },
+    {
+      "character": "HavocRover",
+      "action": "aaa"
+    },
+    {
+      "character": "sanhua",
+      "action": "skill_coordination"
+    },
+    {
+      "character": "sanhua",
+      "action": "zer"
+    },
+    {
+      "character": "verina",
+      "action": "super_ea"
+    },
+    {
+      "character": "HavocRover",
+      "action": "skill_coordination"
+    },
+    {
+      "character": "HavocRover",
+      "action": "q"
+    },
+    {
+      "character": "HavocRover",
+      "action": "e"
+    },
+    {
+      "character": "sanhua",
+      "action": "aa"
+    },
+    {
+      "character": "HavocRover",
+      "action": "skill_coordination"
+    },
+    {
+      "character": "HavocRover",
+      "action": "ze"
+    },
+    {
+      "character": "HavocRover",
+      "action": "aaa"
+    }
+  ],
+  "loop2": [],
+  "loop3": [],
+  "finish": []
+}

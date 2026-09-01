@@ -7,34 +7,82 @@ ELEMENT = Elements.SPECTRO  # 角色属性: 衍射 (对应协奏值环颜色索�
 RESONANCE_CHAIN = 0  # 共鸣链等级 (0-6)
 
 
+def _action_ea(task):
+    while task.enabled and task._combat_active:
+        if check_skill_available(task, "e",skill_image="verina_e"):
+            break
+        time.sleep(0.05)
+    while task.enabled and task._combat_active:
+        if not check_skill_available(task, "e",skill_image="verina_e"):
+            break
+        task.send_key("e")
+        time.sleep(0.05)
+    task.send_key("space")
+    time.sleep(0.2)
+    continuous_click(task, 0.4)
+    return True
+register_action(CHARACTER_NAME, "ea")  # 注册动作 ea
+
+def _action_super_ea(task):
+    while task.enabled and task._combat_active:
+        if check_skill_available(task, "e",skill_image="verina_e"):
+            break
+        time.sleep(0.05)
+    while task.enabled and task._combat_active:
+        if not check_skill_available(task, "e",skill_image="verina_e"):
+            break
+        task.send_key("e")
+        time.sleep(0.05)
+    task.send_key("space")
+    time.sleep(0.2)
+    task.click()
+    while task.enabled and task._combat_active:  
+        if _check_special_skill(task):
+            break
+        task.click()    
+        time.sleep(0.07)    
+    # continuous_click(task, 0.4)
+    return True
+register_action(CHARACTER_NAME, "super_ea")  # 注册动作 super_ea
+
 def _action_main(task):
     while task.enabled and task._combat_active:  
         if check_skill_available(task, "e",skill_image="verina_e"):
             break
         time.sleep(0.05) 
-    while task.enabled and task._combat_active:  
-        if not check_skill_available(task, "e",skill_image="verina_e"):
-            break
-        task.send_key("e")
-        task.send_key("q")
-        time.sleep(0.05)  
+    task.send_key("q")    
+    # while task.enabled and task._combat_active:  
+    #     if not check_skill_available(task, "e",skill_image="verina_e"):
+    #         break
+    #     task.send_key("e")
+    #     time.sleep(0.05)  
     while task.enabled and task._combat_active:  
         if check_skill_available(task, "r",skill_image="verina_r"):
             break
         time.sleep(0.05) 
     while task.enabled and task._combat_active:  
-        if not check_skill_available(task, "r",skill_image="verina_r"):
-            break
         task.send_key("r")
         time.sleep(0.05)
+        if not check_skill_available(task, "r",skill_image="verina_r"):
+            break
     time.sleep(2)    
     while task.enabled and task._combat_active:  
         if detect_self_on_field(task, CHARACTER_NAME):
             break
         time.sleep(0.05)
-    time.sleep(0.1)    
+    # time.sleep(0.1)    
+    while task.enabled and task._combat_active:  
+        if check_skill_available(task, "e",skill_image="verina_e"):
+            break
+        time.sleep(0.05)    
+    while task.enabled and task._combat_active:  
+        if not check_skill_available(task, "e",skill_image="verina_e"):
+            break
+        task.send_key("e")
+        time.sleep(0.05)        
     task.send_key("space")  
-    time.sleep(0.3)
+    time.sleep(0.2)
+    # task.click()
     while task.enabled and task._combat_active:  
         if _check_special_skill(task):
             break
@@ -98,6 +146,10 @@ def run(task):  # 脚本入口函数, 由 CharacterAutoTask 在子线程中调�
             task.log_info(f"{CHARACTER_NAME} 收到轴命令: {axis_action}")
             if axis_action == "main":  # 主连招
                 action_success = _action_main(task)
+            elif axis_action == "ea":  # e 接空中攻击
+                action_success = _action_ea(task)
+            elif axis_action == "super_ea":  # 强化 e 接空中攻击
+                action_success = _action_super_ea(task)
             elif axis_action == "skill_coordination":  # 变奏
                 action_success = _action_skill_coordination(task)
             else:  # 未知动作

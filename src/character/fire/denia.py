@@ -69,7 +69,8 @@ def _action_aafaa(task):
         # task.send_key("space")
         # time.sleep(0.4)
         task.right_click()
-        time.sleep(0.5)
+        # time.sleep(0.35)
+        continuous_click(task, 0.4)
     continuous_click(task, 0.6)
     return True
 register_action(CHARACTER_NAME, "aafaa")  # 注册动作 aafaa

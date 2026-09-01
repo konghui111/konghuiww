@@ -8,7 +8,49 @@ RESONANCE_CHAIN = 0  # 共鸣链等级 (0-6)
 
 def _action_z(task):
     continuous_click(task, 0.2)
+    return True
 register_action(CHARACTER_NAME, "z")
+
+def _action_e(task):
+    continuous_send_key(task,"e", 0.4)
+    return True
+register_action(CHARACTER_NAME, "e")  # 注册 e 技能
+
+def _action_r(task):
+    continuous_send_key(task, "r",2)
+    time.sleep(1)    
+    while task.enabled and task._combat_active:
+        if detect_self_on_field(task, CHARACTER_NAME):
+            break
+        time.sleep(0.05)
+    return True
+register_action(CHARACTER_NAME, "r")  # 注册 r 技能
+
+def _action_main_short(task):
+    task.mouse_down()
+    time.sleep(0.6)
+    task.mouse_up()
+    time.sleep(0.01)
+    task.click()
+    # while task.enabled and task._combat_active:  
+    #     if not check_skill_available(task, "q"):
+    #         break
+    #     task.send_key("q")
+    #     time.sleep(0.05)    
+    # task.send_key("q")    
+    # time.sleep(0.1)
+    # task.send_key("e")    
+    while task.enabled and task._combat_active:
+        # task.send_key("e")
+        task.click()
+        time.sleep(0.05)
+        if _check_special_skill(task):
+            break        
+    task.send_key("q")
+    # time.sleep(0.05)
+    # task.right_click()
+    return True
+register_action(CHARACTER_NAME, "main_short")  # 注册 main_short 动作
 
 def _action_main(task):
     # while task.enabled and task._combat_active:  
@@ -24,8 +66,8 @@ def _action_main(task):
     # task.send_key("r")
     continuous_send_key(task, "r",2)
     time.sleep(1)    
-    while task.enabled and task._combat_active:  
-        if check_skill_available(task, "q"):
+    while task.enabled and task._combat_active:
+        if detect_self_on_field(task, CHARACTER_NAME):
             break
         time.sleep(0.05)
     while task.enabled and task._combat_active:  
@@ -39,7 +81,7 @@ def _action_main(task):
         time.sleep(0.05)
     time.sleep(0.2)    
     task.mouse_down()
-    time.sleep(1.5)
+    time.sleep(0.6)
     task.mouse_up()
     time.sleep(0.01)
     task.click()
@@ -58,8 +100,8 @@ def _action_main(task):
         task.click()
         time.sleep(0.05)
     task.send_key("q")    
-    time.sleep(0.05)
-    task.right_click()
+    # time.sleep(0.05)
+    # task.right_click()
     return True
 register_action(CHARACTER_NAME, "main")  # 注册动作 main
 
@@ -85,6 +127,8 @@ def _action_skill_coordination(task):  # 特殊技能-变奏: 新登场角色触
     被特殊技能强制切换上场后执行的变奏动作。
     触发时清空残留的 end_time, 打断上个动作 (强制置为已完成)。
     """
+    # task.mouse_down()
+    # time.sleep(0.7)
     continuous_click(task, 0.7)
     return True
 register_action(CHARACTER_NAME, "skill_coordination", force_clear=True)  # 注册变奏动作
@@ -116,10 +160,18 @@ def run(task):  # 脚本入口函数, 由 CharacterAutoTask 在子线程中调�
         axis_action = get_axis_command(task, CHARACTER_NAME)  # 获取并清除轴命令
         if axis_action:  # 有轴命令
             task.log_info(f"{CHARACTER_NAME} 收到轴命令: {axis_action}")
-            if axis_action == "main":  # 轴命令执行 ea3
+            if axis_action == "main":  # 主连招
                 action_success = _action_main(task)
-            elif axis_action == "z":  # 轴命令执行 ea3
+            elif axis_action == "main_short":  # 短主连招
+                action_success = _action_main_short(task)
+            elif axis_action == "e":  # e 技能
+                action_success = _action_e(task)
+            elif axis_action == "r":  # r 技能
+                action_success = _action_r(task)
+            elif axis_action == "z":  # z 攻击
                 action_success = _action_z(task)
+            elif axis_action == "skill_coordination":  # 变奏
+                action_success = _action_skill_coordination(task)
             else:  # 未知动作
                 task.log_error(f"轴配置错误: {CHARACTER_NAME} 未知动作 {axis_action}")
             # 报告轴执行结果

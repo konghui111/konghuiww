@@ -16,7 +16,7 @@ WHITE = {'b': (255, 255), 'g': (255, 255), 'r': (255, 255)}  # 白色 RGB 颜色
 
 
 def _action_aaaa(task):
-    continuous_click(task, 0.8)
+    continuous_click(task, 0.6)
     return True
 register_action(CHARACTER_NAME, "aaaa")  # 注册动作 aaaa
 
@@ -98,9 +98,9 @@ def _action_ea4qr(task):
     # 步骤7: 等待 4 秒
     time.sleep(4.2)
     while task.enabled and task._combat_active:
-        if check_skill_available(task, "a",white_threshold=0.01):
+        if detect_self_on_field(task, CHARACTER_NAME):
             break
-        time.sleep(0.01)
+        time.sleep(0.05)
     # 步骤8: 等待协奏值满
     # while task.enabled and task._combat_active:
     #     if _check_special_skill(task):
@@ -188,17 +188,17 @@ def run(task):  # 脚本入口函数, 由 CharacterAutoTask 在子线程中调�
             elif axis_action == "normal_a23":  # 普通连击
                 action_success = _action_normal_a23(task)
             elif axis_action == "super_a12":  # 强化连击 (需要 e_buff)
-                if check_buff(task, slot, "e_buff"):  # 检查 e_buff 是否激活
-                    action_success = _action_super_a12(task)
-                else:
-                    task.log_error(f"轴配置错误: {CHARACTER_NAME} 执行 super_a12 需要 e_buff, 当前未激活")
+                # if check_buff(task, slot, "e_buff"):  # 检查 e_buff 是否激活
+                action_success = _action_super_a12(task)
+                # else:
+                    # task.log_error(f"轴配置错误: {CHARACTER_NAME} 执行 super_a12 需要 e_buff, 当前未激活")
             elif axis_action == "a4e":  # 技能 (带强化)
                 action_success = _action_a4e(task)
             elif axis_action == "ea4qr":  # 终结技 (需要 e_buff)
-                if check_buff(task, slot, "e_buff"):  # 检查 e_buff 是否激活
-                    action_success = _action_ea4qr(task)
-                else:
-                    task.log_error(f"轴配置错误: {CHARACTER_NAME} 执行 ea4qr 需要 e_buff, 当前未激活")
+                # if check_buff(task, slot, "e_buff"):  # 检查 e_buff 是否激活
+                action_success = _action_ea4qr(task)
+                # else:
+                    # task.log_error(f"轴配置错误: {CHARACTER_NAME} 执行 ea4qr 需要 e_buff, 当前未激活")
             elif axis_action == "skill_coordination_z":  # 变奏
                 action_success = _action_skill_coordination_z(task)
             elif axis_action == "skill_coordination":  # 变奏
